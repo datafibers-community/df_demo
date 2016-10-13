@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define "deb" do |deb|
+    deb.vm.box = "ubuntu/trusty64"
+    deb.vm.provision "shell", path: "vagrant_shell/deb.sh"
+  end
+
+  #Below does not work on billkitchen on windows
+  #config.vm.synced_folder "~/.gnupg", "/root/.gnupg", owner: "root", group: "root"
+
+  #Config port forward
+  #For Zeppeline
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  #For Elastic Search
+  config.vm.network "forwarded_port", guest: 9200, host: 9200
+  #For Grafana
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--memory", "4096"]
+    vb.name = "DF_DEMO"
+  end
+
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+      s.privileged = false
+      s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+  end
+
+end
