@@ -62,23 +62,6 @@ chmod a+rwx /mnt
 
 sudo apt-get -y update
 
-# Install Java 8 in two ways depending on the proxy setting
-if [ -z `which javac` -o "$(java -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')" -lt 18 ]; then 
-    if [ "$proxy_enabled" = true ]; then
-        wget --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
-        sudo tar -xvzf jdk-8u101-linux-x64.tar.gz -C /usr/lib/jvm/
-        sudo mv /usr/lib/jvm/jdk1.8.0_101 /usr/lib/jvm/java-8-oracle
-        sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-oracle/bin/java 2000
-        sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-8-oracle/bin/javac 2000
-    fi
-    if [ "$proxy_enabled" = false ]; then
-        sudo apt-get install -y software-properties-common
-        sudo add-apt-repository -y  ppa:openjdk-r/ppa
-        sudo apt-get update
-        sudo apt-get install -y wget openjdk-8-jdk
-    fi
-fi
-
 # Install and configure Apache Hadoop
 
 soft_install $install_hadoop hadoop $dl_link_hadoop
@@ -95,6 +78,9 @@ soft_install $install_elastic elastic $dl_link_elastic
 # Install Zeppelin
 soft_install $install_zeppelin zeppelin $dl_link_zeppelin
 
+# Install Flink
+soft_install $install_flink flink $dl_link_flink
+
 # Install Grafana
 if [ "$install_grafana" = true ]; then 
     echo "Install - Grafana Reporting"
@@ -104,6 +90,14 @@ if [ "$install_grafana" = true ]; then
     fi
     sudo apt-get install -y adduser libfontconfig   
     sudo dpkg -i $grafana_file_name
+fi
+
+# Install MongoDB
+if [ "$install_mongo" = true ]; then
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
 fi
 
 #Install Maven and Git
@@ -151,7 +145,8 @@ schematool -dbType mysql -initSchema
 # Get lastest init scripts
 rm -f master.zip
 rm -rf df_demo-master
-wget --progress=bar:force https://github.com/datafibers/df_demo/archive/master.zip
+wget --progress=bar:force https://github.com/datafibers-community/df_demo/archive/master.zip
 unzip master.zip
 cp df_demo-master/df-environment/df-env-app-init/* /home/vagrant/
 chmod +x *.sh
+rm -rf master.zip

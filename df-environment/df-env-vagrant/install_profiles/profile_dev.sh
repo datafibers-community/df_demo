@@ -6,11 +6,17 @@ dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.
 install_hive=true
 
 release_confluent=-2.11
-dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
 install_confluent=true
 
+release_confluent=-bin-hadoop26-scala_2.11
+dl_link_flink=http://apache.mirror.gtcomm.net/flink/flink-1.1.3/flink-1.1.3-bin-hadoop26-scala_2.11.tgz
+install_flink=true
+
+install_mongo=true
+
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
-install_elastic=true
+install_elastic=false
 
 dl_link_zeppelin=http://mirror.its.dal.ca/apache/zeppelin/zeppelin-0.6.0/zeppelin-0.6.0-bin-all.tgz
 install_zeppelin=false

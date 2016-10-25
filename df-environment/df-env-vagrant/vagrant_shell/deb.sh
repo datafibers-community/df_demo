@@ -1,5 +1,5 @@
 #!/bin/bash
-proxy_enabled=false
+
 #Install profile - development
 dl_link_hadoop=http://mirrors.koehn.com/apache/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 install_hadoop=true
@@ -8,18 +8,23 @@ dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.
 install_hive=true
 
 release_confluent=-2.11
-dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
 install_confluent=true
 
+release_confluent=-bin-hadoop26-scala_2.11
+dl_link_flink=http://apache.mirror.gtcomm.net/flink/flink-1.1.3/flink-1.1.3-bin-hadoop26-scala_2.11.tgz
+install_flink=true
+
+install_mongo=true
+
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
-install_elastic=true
+install_elastic=false
 
 dl_link_zeppelin=http://mirror.its.dal.ca/apache/zeppelin/zeppelin-0.6.0/zeppelin-0.6.0-bin-all.tgz
 install_zeppelin=false
 
 dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
-install_grafana=true
-
+install_grafana=false
 
 set -e
 
@@ -42,7 +47,7 @@ function soft_install
     release_version=$4
 
     #remove release number for confluent, which has release number in URL, but not in the unzip folder
-    install_folder=${install_folder//$release_version} 
+    install_folder=${install_folder//$release_version}
 
     echo "$install_flag"
     echo "$dl_link"
@@ -63,7 +68,7 @@ function soft_install
             fi
             popd
             tar xvzf /tmp/vagrant-downloads/$file_name
-            ln -sfn $install_folder $install_soft_link           
+            ln -sfn $install_folder $install_soft_link
         fi
     fi
     popd
@@ -84,23 +89,6 @@ chmod a+rwx /mnt
 
 sudo apt-get -y update
 
-# Install Java 8 in two ways depending on the proxy setting
-if [ -z `which javac` -o "$(java -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')" -lt 18 ]; then 
-    if [ "$proxy_enabled" = true ]; then
-        wget --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
-        sudo tar -xvzf jdk-8u101-linux-x64.tar.gz -C /usr/lib/jvm/
-        sudo mv /usr/lib/jvm/jdk1.8.0_101 /usr/lib/jvm/java-8-oracle
-        sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-oracle/bin/java 2000
-        sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-8-oracle/bin/javac 2000
-    fi
-    if [ "$proxy_enabled" = false ]; then
-        sudo apt-get install -y software-properties-common
-        sudo add-apt-repository -y  ppa:openjdk-r/ppa
-        sudo apt-get update
-        sudo apt-get install -y wget openjdk-8-jdk
-    fi
-fi
-
 # Install and configure Apache Hadoop
 echo "install - hdp"
 soft_install $install_hadoop hadoop $dl_link_hadoop
@@ -117,14 +105,25 @@ soft_install $install_elastic elastic $dl_link_elastic
 # Install Zeppelin
 soft_install $install_zeppelin zeppelin $dl_link_zeppelin
 
+# Install Flink
+soft_install $install_flink flink $dl_link_flink
+
 # Install Grafana
-if [ "$install_grafana" = true ]; then 
+if [ "$install_grafana" = true ]; then
     grafana_file_name=$(basename $dl_link_grafana)
     if [ ! -e $grafana_file_name ]; then
         wget --progress=bar:force $dl_link_grafana
     fi
-    sudo apt-get install -y adduser libfontconfig   
+    sudo apt-get install -y adduser libfontconfig
     sudo dpkg -i $grafana_file_name
+fi
+
+# Install MongoDB
+if [ "$install_mongo" = true ]; then
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
 fi
 
 #Install Maven and Git
@@ -146,6 +145,7 @@ mkdir -p /mnt/dfs/data
 chown -R vagrant:vagrant /mnt/dfs
 chown -R vagrant:vagrant /mnt/dfs/name
 chown -R vagrant:vagrant /mnt/dfs/data
+sudo chown -R vagrant:vagrant /opt
 
 # Install MySQL Metastore for Hive - do this after creating profiles in order to use hive schematool
 sudo apt-get -y update
@@ -172,7 +172,8 @@ schematool -dbType mysql -initSchema
 # Get lastest init scripts
 rm -f master.zip
 rm -rf df_demo-master
-wget --progress=bar:force https://github.com/datafibers/df_demo/archive/master.zip
+wget --progress=bar:force https://github.com/datafibers-community/df_demo/archive/master.zip
 unzip master.zip
 cp df_demo-master/df-environment/df-env-app-init/* /home/vagrant/
 chmod +x *.sh
+rm -rf master.zip

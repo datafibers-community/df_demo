@@ -12,10 +12,16 @@ This is where we demo projects using DF. There are following projects in pipelin
 - [ ] DF ingests data => D3
 
 ##2. VM Setup
-The [installvm.sh](https://github.com/datafibers/df_demo/blob/master/df-environment/df-env-vagrant/installvm.sh) is used to generate different profiles for VM setup used by Vagrant. 
+First, make sure Vagrant is installed from [here](https://www.vagrantup.com/downloads.html) or [here](https://github.com/tknerr/bills-kitchen)
+Then, run below commands either in Linux or [GitBash Console](https://git-for-windows.github.io/) in Windows.
 
-* In Linux, you can either run in in Linux directly. 
-* In Windows, run it through [Git for Windows](https://git-for-windows.github.io/)'s GitBash
+To run default environment setup, run
+
+    vagrant up
+    
+To customize the environment setup, run [installvm.sh](https://github.com/datafibers/df_demo/blob/master/df-environment/df-env-vagrant/installvm.sh) is used to generate different profiles for VM setup used by Vagrant. 
+
+    ./installvm.sh
 
 ##3. Demo Setup
 Run [run_demo.sh](https://github.com/datafibers/df_demo/blob/master/df-environment/df-env-app-init/run_demo.sh) to start all deamons for demo.
