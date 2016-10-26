@@ -19,6 +19,7 @@ if [ -h /opt/flink ]; then
 fi
 
 # Start Kafka Connect
-/opt/confluent/bin/connect-standalone connect-standalone.properties connect-standalone.properties
+rm -rf /mnt/connect.offsets
+/opt/confluent/bin/connect-standalone connect-standalone.properties connect-file-source.properties
 
 
