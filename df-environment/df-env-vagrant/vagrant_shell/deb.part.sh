@@ -79,7 +79,7 @@ soft_install $install_elastic elastic $dl_link_elastic
 soft_install $install_zeppelin zeppelin $dl_link_zeppelin
 
 # Install Flink
-soft_install $install_flink flink $dl_link_flink
+soft_install $install_flink flink $dl_link_flink $release_flink
 
 # Install Grafana
 if [ "$install_grafana" = true ]; then 

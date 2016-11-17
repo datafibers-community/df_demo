@@ -11,7 +11,7 @@ release_confluent=-2.11
 dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
 install_confluent=true
 
-release_confluent=-bin-hadoop26-scala_2.11
+release_flink=-bin-hadoop26-scala_2.11
 dl_link_flink=http://apache.mirror.gtcomm.net/flink/flink-1.1.3/flink-1.1.3-bin-hadoop26-scala_2.11.tgz
 install_flink=true
 
@@ -106,7 +106,7 @@ soft_install $install_elastic elastic $dl_link_elastic
 soft_install $install_zeppelin zeppelin $dl_link_zeppelin
 
 # Install Flink
-soft_install $install_flink flink $dl_link_flink
+soft_install $install_flink flink $dl_link_flink $release_flink
 
 # Install Grafana
 if [ "$install_grafana" = true ]; then
