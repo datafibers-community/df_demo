@@ -26,6 +26,10 @@ fi
 echo "Shutting down all other Java process, Hive Meta, ElasticSearch"
 killall java
 
+echo "Shutting down Kafka remain"
+kill -9 $(jps|grep SupportedKafka|cut -d " " -f1)
+
+
 
 
 
