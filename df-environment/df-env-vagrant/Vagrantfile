@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 8000, host: 8000	#DF Web
   config.vm.network "forwarded_port", guest: 8001, host: 8001   #Flink Web Console  
   config.vm.network "forwarded_port", guest: 8080, host: 8080	#DF RESR
-  config.vm.network "forwarded_port", guest: 8081, host: 8081   #Flink/Kafka Schema Registry
+  config.vm.network "forwarded_port", guest: 8081, host: 8002   #Flink/Kafka Schema Registry
   config.vm.network "forwarded_port", guest: 8082, host: 8082   #Kafka REST 
   config.vm.network "forwarded_port", guest: 8083, host: 8083   #Kafka Connect REST   
   config.vm.network "forwarded_port", guest: 9092, host: 9092   #Kafka  
