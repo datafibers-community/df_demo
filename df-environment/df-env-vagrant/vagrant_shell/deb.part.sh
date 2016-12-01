@@ -162,11 +162,11 @@ cp df_demo/df-environment/df-env-app-init/* /home/vagrant/
 cd /home/vagrant/
 chmod +x *.sh
 
-echo "*************************************************************************************************"
-echo "* 	DataFibers Virtual Machine Setup Completed.												  *"
-echo "*		Note, 																					  *"
-echo "*     Flink Web Console port is mapping to 8001 to avoid conflict with Schema Registry Service. *"
-echo "*		SSH address:127.0.0.1:2222. 															  *"
-echo "*		SSH username/password:vagrant/vagrant                                                     *"
-echo "*************************************************************************************************"
+echo "***********************************************************************************************"
+echo "* 	DataFibers Virtual Machine Setup Completed."
+echo "*		Note,"
+echo "*     Flink Web Console port is mapping to 8001 to avoid conflict with Schema Registry Service."
+echo "*		SSH address:127.0.0.1:2222."
+echo "*		SSH username/password:vagrant/vagrant"
+echo "***********************************************************************************************"
 
