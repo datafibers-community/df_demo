@@ -147,6 +147,14 @@ chown -R vagrant:vagrant /mnt/dfs/name
 chown -R vagrant:vagrant /mnt/dfs/data
 sudo chown -R vagrant:vagrant /opt
 
+# Map Flink Web Console port to 8001
+mv /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
+cp /mnt/etc/flink/flink-conf.yaml /opt/flink/conf/
+
+# Enable mongodb access from out side of vm
+sudo mv /etc/mongod.conf /etc/mongod.conf.bk
+cp /mnt/etc/mongo/mongod.conf /etc/
+
 # Install MySQL Metastore for Hive - do this after creating profiles in order to use hive schematool
 sudo apt-get -y update
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password mypassword'
@@ -170,10 +178,16 @@ mysql -u root --password="mypassword" \
 schematool -dbType mysql -initSchema
 
 # Get lastest init scripts
-rm -f master.zip
-rm -rf df_demo-master
-wget --progress=bar:force https://github.com/datafibers-community/df_demo/archive/master.zip
-unzip master.zip
-cp df_demo-master/df-environment/df-env-app-init/* /home/vagrant/
+rm -rf gitrepo
+mkdir gitrepo
+cd gitrepo
+git clone https://github.com/datafibers-community/df_demo.git
+git clone https://github.com/datafibers-community/df_data_service.git
+git clone https://github.com/datafibers-community/df_certified_connects.git
+
+cp df_demo/df-environment/df-env-app-init/* /home/vagrant/
+cd /home/vagrant/
 chmod +x *.sh
-rm -rf master.zip
+
+echo "DataFibers Virtual Machine Setup Completed."
+echo "Note, Flink Web Admin Console's port maps to 8001 to avoid conflict with Schema Registry Service."
