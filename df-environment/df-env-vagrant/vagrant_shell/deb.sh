@@ -191,3 +191,5 @@ chmod +x *.sh
 
 echo "DataFibers Virtual Machine Setup Completed."
 echo "Note, Flink Web Admin Console's port maps to 8001 to avoid conflict with Schema Registry Service."
+echo "SSH address:127.0.0.1:2222. "
+echo "SSH username/password:vagrant/vagrant"
