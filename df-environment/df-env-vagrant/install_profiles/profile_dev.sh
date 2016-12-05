@@ -6,7 +6,7 @@ dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.
 install_hive=true
 
 release_confluent=-2.11
-dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz
 install_confluent=true
 
 release_flink=-bin-hadoop26-scala_2.11

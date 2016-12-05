@@ -150,18 +150,6 @@ mysql -u root --password="mypassword" \
 
 schematool -dbType mysql -initSchema
 
-# Get lastest init scripts
-rm -rf gitrepo
-mkdir gitrepo
-cd gitrepo
-git clone https://github.com/datafibers-community/df_demo.git
-git clone https://github.com/datafibers-community/df_data_service.git
-git clone https://github.com/datafibers-community/df_certified_connects.git
-
-cp df_demo/df-environment/df-env-app-init/* /home/vagrant/
-cd /home/vagrant/
-chmod +x *.sh
-
 echo "***********************************************************************************************"
 echo "* 	DataFibers Virtual Machine Setup Completed."
 echo "*		Note,"

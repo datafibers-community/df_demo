@@ -33,9 +33,18 @@ if [ -h /opt/hive ]; then
     hive --service hiveserver2 1>> /mnt/logs/hiveserver2.log 2>> /mnt/logs/hiveserver2.log &
 fi
 
+export CLASSPATH=~
+
 # Start Kafka Connect
 rm -rf /mnt/connect.offsets
-/opt/confluent/bin/connect-distributed /home/vagrant/df_config/connect-distributed.properties
+
+for jar in /home/vagrant/df_connect/*; do
+  CLASSPATH=${CLASSPATH}:${jar}
+done
+
+export CLASSPATH
+
+/opt/confluent/bin/connect-distributed /home/vagrant/df_config/connect-avro-distributed.properties
 
 
 

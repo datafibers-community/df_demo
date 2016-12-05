@@ -28,6 +28,7 @@ killall java
 
 echo "Shutting down Kafka remain"
 kill -9 $(jps|grep SupportedKafka|cut -d " " -f1)
+kill -9 $(jps|grep ConnectDistributed|cut -d " " -f1)
 
 
 

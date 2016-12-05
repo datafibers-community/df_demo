@@ -8,7 +8,7 @@ dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.
 install_hive=true
 
 release_confluent=-2.11
-dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz
 install_confluent=true
 
 release_flink=-bin-hadoop26-scala_2.11
@@ -176,18 +176,6 @@ mysql -u root --password="mypassword" \
 -e "GRANT ALL PRIVILEGES ON metastore.* TO 'hive'@'localhost' IDENTIFIED BY 'mypassword'; FLUSH PRIVILEGES;"
 
 schematool -dbType mysql -initSchema
-
-# Get lastest init scripts
-rm -rf gitrepo
-mkdir gitrepo
-cd gitrepo
-git clone https://github.com/datafibers-community/df_demo.git
-git clone https://github.com/datafibers-community/df_data_service.git
-git clone https://github.com/datafibers-community/df_certified_connects.git
-
-cp df_demo/df-environment/df-env-app-init/* /home/vagrant/
-cd /home/vagrant/
-chmod +x *.sh
 
 echo "***********************************************************************************************"
 echo "* 	DataFibers Virtual Machine Setup Completed."
