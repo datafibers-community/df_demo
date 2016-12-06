@@ -33,9 +33,19 @@ if [ -h /opt/hive ]; then
     hive --service hiveserver2 1>> /mnt/logs/hiveserver2.log 2>> /mnt/logs/hiveserver2.log &
 fi
 
+# Start Kafka Connect
+rm -rf /mnt/connect.offsets
+
 export CLASSPATH=/home/vagrant/df_connect/df-connect-file-generic-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 
-/opt/confluent/bin/connect-standalone /home/vagrant/df_config/connect-standalone.properties /home/vagrant/df_config/connect-file-generic-source.properties
+/opt/confluent/bin/connect-standalone /home/vagrant/df_config/connect-avro-standalone.properties /home/vagrant/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
+
+sleep 5
+
+curl -X "DELETE" http://localhost:8083/connectors/dummy
+
+echo "Start DF Environment Completed with AVRO support. You can see Kafka Connect log at"
+echo "tail -f /mnt/logs/kafkaconnect.log"
 
 
 

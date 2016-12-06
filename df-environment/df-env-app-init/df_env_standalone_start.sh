@@ -35,7 +35,15 @@ fi
 
 # Start Kafka Connect
 rm -rf /mnt/connect.offsets
-/opt/confluent/bin/connect-distributed /home/vagrant/df_config/connect-distributed.properties
+
+/opt/confluent/bin/connect-standalone /home/vagrant/df_config/connect-standalone.properties /home/vagrant/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
+
+sleep 5
+
+curl -X "DELETE" http://localhost:8083/connectors/dummy
+
+echo "Start DF Environment Completed without Avro support. You can see Kafka Connect log at"
+echo "tail -f /mnt/logs/kafkaconnect.log"
 
 
 
