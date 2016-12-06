@@ -38,7 +38,7 @@ rm -rf /mnt/connect.offsets
 
 /opt/confluent/bin/connect-standalone /home/vagrant/df_config/connect-standalone.properties /home/vagrant/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
 
-sleep 5
+sleep 10
 
 curl -X "DELETE" http://localhost:8083/connectors/dummy
 
