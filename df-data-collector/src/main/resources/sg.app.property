@@ -1,5 +1,6 @@
 #sample property file
-demo.stock.list=GOOG;FB;MSFT;INTC;AAPL;HDP;DATA;F;BAC;GRPN;AMD;C;T;ORCL;WFM
+#demo.stock.list=AAPL;GOOGL;FB;MSFT;ORCL;TCEHY;INTC;CSCO;IBM;BABA
+demo.stock.list=000001.sz;000002.sz;000006.sz;000008.sz;000009.sz;000010.sz;000088.sz;399001.sz;300104.sz;000089.sz
 demo.stock.stage.dir=/home/vagrant/cust_data
 demo.stock.run.periodic=10000
 demo.stock.simple.enable=false
