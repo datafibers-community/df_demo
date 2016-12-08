@@ -10,4 +10,6 @@ rm -rf /mnt/dfs/data/*
 rm -rf /mnt/connect.offsets
 rm -rf /mnt/logs/*
 
+sh df_init_all.sh
+
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Starting Hadoop
 if [ -h /opt/hadoop ]; then
     echo "Starting Hadoop"
@@ -36,7 +38,7 @@ fi
 # Start Kafka Connect
 rm -rf /mnt/connect.offsets
 
-/opt/confluent/bin/connect-standalone /home/vagrant/df_config/connect-standalone.properties /home/vagrant/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
+/opt/confluent/bin/connect-standalone $CURRENT_DIR/df_config/connect-standalone.properties $CURRENT_DIR/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
 
 sleep 20
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
-
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Starting Hadoop
 if [ -h /opt/hadoop ]; then
-    echo "Starting Hadoop"
+    echo "Starting Hadoop. Make sure you format HDP using init_all.sh if any error happens"
     hadoop-daemon.sh start namenode
     hadoop-daemon.sh start datanode
 fi
@@ -33,9 +33,11 @@ if [ -h /opt/hive ]; then
     hive --service hiveserver2 1>> /mnt/logs/hiveserver2.log 2>> /mnt/logs/hiveserver2.log &
 fi
 
-export CLASSPATH=/home/vagrant/df_connect/df-connect-file-generic-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+export CLASSPATH=$CURRENT_DIR/df_connect/df-connect-file-generic.jar
+rm -f /mnt/logs/distributedkafkaconnect.log
+/opt/confluent/bin/connect-distributed $CURRENT_DIR/df_config/connect-avro-distributed.properties 1>> /mnt/logs/distributedkafkaconnect.log 2>> /mnt/logs/distributedkafkaconnect.log &
 
-/opt/confluent/bin/connect-distributed /home/vagrant/df_config/connect-avro-distributed.properties
-
-
+echo "Starting DF Environment Complete"
+echo "You can find all log files at /mnt/logs/"
+echo "You can start DF applications now ..."
 

@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
-
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 # Starting Confluent Platform
 if [ -h /opt/confluent ]; then
     echo "Starting Confluent Kafka"
@@ -14,11 +12,15 @@ if [ -h /opt/confluent ]; then
     sleep 5
 fi
 
+# Starting Flink
+if [ -h /opt/flink ]; then
+    echo "Starting Apache Flink"
+    /opt/flink/bin/start-cluster.sh
+fi
+
 export CLASSPATH=$CURRENT_DIR/df_connect/df-connect-file-generic.jar
-
 rm -f /mnt/logs/distributedkafkaconnect.log
-
-/opt/confluent/bin/connect-distributed $CURRENT_DIR/df_config/connect-distributed.properties 1>> /mnt/logs/distributedkafkaconnect.log 2>> /mnt/logs/distributedkafkaconnect.log &
+/opt/confluent/bin/connect-distributed $CURRENT_DIR/df_config/connect-avro-distributed.properties 1>> /mnt/logs/distributedkafkaconnect.log 2>> /mnt/logs/distributedkafkaconnect.log &
 
 echo "Starting DF Environment Complete"
 echo "You can find all log files at /mnt/logs/"

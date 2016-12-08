@@ -77,7 +77,7 @@
     <orderEntry type="module-library">
       <library name="Maven: jdk.tools:jdk.tools:1.6">
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/javajdk/jre/../lib/tools.jar!/" />
+          <root url="jar://$USER_HOME$/Soft/javajdk/jre/../lib/tools.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
