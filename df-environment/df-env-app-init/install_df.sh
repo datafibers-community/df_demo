@@ -40,6 +40,7 @@ cd $CURRENT_DIR/df_git/df_certified_connects
 mvn package -DskipTests
 
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
+cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/df_git/df_certified_connects/df-connect-file-generic/target/*.jar $CURRENT_DIR/df_connect
 cp $CURRENT_DIR/df_git/df_data_service/target/*fat.jar $CURRENT_DIR
 ln -sf $CURRENT_DIR/df_connect/df-connect-file-generic-*-SNAPSHOT.jar $CURRENT_DIR/df_connect/df-connect-file-generic.jar
