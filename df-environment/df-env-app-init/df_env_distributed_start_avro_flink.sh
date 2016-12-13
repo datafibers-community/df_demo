@@ -18,7 +18,11 @@ if [ -h /opt/flink ]; then
     /opt/flink/bin/start-cluster.sh
 fi
 
-export CLASSPATH=$CURRENT_DIR/df_connect/df-connect-file-generic.jar
+for jar in $CURRENT_DIR/df_connect/*dependencies.jar; do
+  CLASSPATH=${CLASSPATH}:${jar}
+done
+export CLASSPATH
+
 rm -f /mnt/logs/distributedkafkaconnect.log
 /opt/confluent/bin/connect-distributed $CURRENT_DIR/df_config/connect-avro-distributed.properties 1>> /mnt/logs/distributedkafkaconnect.log 2>> /mnt/logs/distributedkafkaconnect.log &
 
