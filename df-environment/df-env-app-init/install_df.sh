@@ -34,10 +34,12 @@ git clone https://github.com/datafibers-community/df_demo.git
 git clone https://github.com/datafibers-community/df_data_service.git
 git clone https://github.com/datafibers-community/df_certified_connects.git
 
+echo "Step (2/3). Compiling DF app and connector jars start"
 cd $CURRENT_DIR/df_git/df_data_service
-mvn package -DskipTests
+mvn package -DskipTests > /dev/null 2>&1
 cd $CURRENT_DIR/df_git/df_certified_connects
-mvn package -DskipTests
+mvn package -DskipTests > /dev/null 2>&1
+echo "Step (2/3). Compiling DF app and connector jars complete"
 
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
