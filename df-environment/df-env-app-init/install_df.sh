@@ -57,6 +57,7 @@ echo "Step (3/3). Applying patch on Flink web ui port complete"
 cd $CURRENT_DIR/
 cp $CURRENT_DIR/df_git/df_demo/df-environment/df-env-app-init/df* $CURRENT_DIR
 chmod +x *.sh
+sudo chown vagrant:vagrant *
 
 echo "All DF packages are installed successfully." 
 
