@@ -41,15 +41,13 @@ fi
 echo "Step (1/3). Creating df folders complete"
 
 echo "Step (2/3). Downloading DF source and build start"
-(cd df_git &&
-rm -rf df_demo &&
-rm -rf df_data_service &&
-rm -rf df_certified_connects &&
-git clone https://github.com/datafibers-community/df_demo.git > /dev/null 2>&1 &&
-git clone https://github.com/datafibers-community/df_data_service.git > /dev/null 2>&1 &&
-git clone https://github.com/datafibers-community/df_certified_connects.git > /dev/null 2>&1) &
-
-progress_bar Download_DF_Source
+cd df_git
+rm -rf df_demo 
+rm -rf df_data_service 
+rm -rf df_certified_connects 
+git clone https://github.com/datafibers-community/df_demo.git
+git clone https://github.com/datafibers-community/df_data_service.git
+git clone https://github.com/datafibers-community/df_certified_connects.git
 
 (cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
 
