@@ -134,6 +134,7 @@ sudo apt-get install dos2unix
 # Copy .profile and change owner to vagrant
 cp /vagrant/.profile /home/vagrant/
 chown vagrant:vagrant /home/vagrant/.profile
+dos2unix /home/vagrant/.profile
 source /home/vagrant/.profile
 
 cp -r /vagrant/etc /mnt/
@@ -178,8 +179,6 @@ mysql -u root --password="mypassword" \
 -e "GRANT ALL PRIVILEGES ON metastore.* TO 'hive'@'localhost' IDENTIFIED BY 'mypassword'; FLUSH PRIVILEGES;"
 
 schematool -dbType mysql -initSchema
-
-dos2unix .profile
 
 echo "***********************************************************************************************"
 echo "* 	DataFibers Virtual Machine Setup Completed."
