@@ -45,9 +45,9 @@ echo "Step (2/3). Downloading DF source and build start"
 rm -rf df_demo &&
 rm -rf df_data_service &&
 rm -rf df_certified_connects &&
-git clone https://github.com/datafibers-community/df_demo.git &&
-git clone https://github.com/datafibers-community/df_data_service.git &&
-git clone https://github.com/datafibers-community/df_certified_connects.git) &
+git clone https://github.com/datafibers-community/df_demo.git > /dev/null 2>&1 &&
+git clone https://github.com/datafibers-community/df_data_service.git > /dev/null 2>&1 &&
+git clone https://github.com/datafibers-community/df_certified_connects.git > /dev/null 2>&1) &
 
 progress_bar Download_DF_Source
 
