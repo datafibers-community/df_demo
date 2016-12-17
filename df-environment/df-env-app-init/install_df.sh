@@ -1,4 +1,19 @@
 #!/bin/bash
+function progress_bar
+{
+    installed=$1
+    PID=$! 
+    echo "PLEASE BE PATIENT WHILE [$installed] IS ONGOING..."
+    printf "["
+    # While process is running...
+    while kill -0 $PID 2> /dev/null; do 
+        printf  "▓"
+        sleep 1
+    done
+    printf "] $installed IS COMPLETED!"
+    echo
+}
+
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 set -e
@@ -26,37 +41,24 @@ fi
 echo "Step (1/3). Creating df folders complete"
 
 echo "Step (2/3). Downloading DF source and build start"
-cd df_git
-rm -rf df_demo
-rm -rf df_data_service
-rm -rf df_certified_connects
-git clone https://github.com/datafibers-community/df_demo.git
-git clone https://github.com/datafibers-community/df_data_service.git
-git clone https://github.com/datafibers-community/df_certified_connects.git
+(cd df_git &&
+rm -rf df_demo &&
+rm -rf df_data_service &&
+rm -rf df_certified_connects &&
+git clone https://github.com/datafibers-community/df_demo.git &&
+git clone https://github.com/datafibers-community/df_data_service.git &&
+git clone https://github.com/datafibers-community/df_certified_connects.git &&) &
+
+progress_bar Download_DF_Source
 
 (cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
-PID=$! 
-echo "PLEASE BE PATIENT WHILE [df_data_service] JRA IS COMPILING..."
-printf "["
-# While process is running...
-while kill -0 $PID 2> /dev/null; do 
-    printf  "▓"
-    sleep 1
-done
-printf "] df_data_service jar is compiled!"
-echo
+
+progress_bar Compiling_DF_Service
+
 (cd $CURRENT_DIR/df_git/df_certified_connects && mvn package -DskipTests > /dev/null 2>&1) &
 
-PID=$! 
-echo "PLEASE BE PATIENT WHILE [df_certified_connects] JRA IS COMPILING..."
-printf "["
-# While process is running...
-while kill -0 $PID 2> /dev/null; do 
-    printf  "▓"
-    sleep 1
-done
-printf "] df_certified_connects jar is compiled!"
-echo
+progress_bar Compiling_DF_Connectors
+
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/df_git/df_certified_connects/*/target/*dependencies.jar $CURRENT_DIR/df_connect
@@ -76,5 +78,3 @@ chmod +x *.sh
 sudo chown -R vagrant:vagrant *
 
 echo "All DF packages are installed successfully." 
-
-
