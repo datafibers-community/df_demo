@@ -47,7 +47,7 @@ rm -rf df_data_service &&
 rm -rf df_certified_connects &&
 git clone https://github.com/datafibers-community/df_demo.git &&
 git clone https://github.com/datafibers-community/df_data_service.git &&
-git clone https://github.com/datafibers-community/df_certified_connects.git &&) &
+git clone https://github.com/datafibers-community/df_certified_connects.git) &
 
 progress_bar Download_DF_Source
 
