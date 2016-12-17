@@ -43,8 +43,8 @@ while kill -0 $PID 2> /dev/null; do
     printf  "▓"
     sleep 1
 done
-printf "] df_data_service jar is compiled! \n"
-
+printf "] df_data_service jar is compiled!"
+echo
 (cd $CURRENT_DIR/df_git/df_certified_connects && mvn package -DskipTests > /dev/null 2>&1) &
 
 PID=$! 
@@ -55,8 +55,8 @@ while kill -0 $PID 2> /dev/null; do
     printf  "▓"
     sleep 1
 done
-printf "] df_certified_connects jar is compiled! \n"
-
+printf "] df_certified_connects jar is compiled!"
+echo
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/df_git/df_certified_connects/*/target/*dependencies.jar $CURRENT_DIR/df_connect
