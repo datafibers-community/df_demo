@@ -36,7 +36,7 @@ git clone https://github.com/datafibers-community/df_certified_connects.git
 
 echo "Step (2/3). Compiling DF app and connector jars start"
 cd $CURRENT_DIR/df_git/df_data_service
-mvn package -DskipTests 2>/dev/null &
+mvn package -DskipTests > /dev/null 2>&1 &
 PID=$! #simulate a long process
 echo "THIS MAY TAKE A WHILE, PLEASE BE PATIENT WHILE ______ IS RUNNING..."
 printf "["
@@ -45,7 +45,7 @@ while kill -0 $PID 2> /dev/null; do
     printf  "▓"
     sleep 1
 done
-printf "] done!"
+printf "] df_data_service jar is compiled!"
 
 cd $CURRENT_DIR/df_git/df_certified_connects
 mvn package -DskipTests > /dev/null 2>&1
