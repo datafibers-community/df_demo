@@ -34,11 +34,9 @@ git clone https://github.com/datafibers-community/df_demo.git
 git clone https://github.com/datafibers-community/df_data_service.git
 git clone https://github.com/datafibers-community/df_certified_connects.git
 
-echo "Step (2/3). Compiling DF app and connector jars start"
-cd $CURRENT_DIR/df_git/df_data_service
-mvn package -DskipTests > /dev/null 2>&1 &
-PID=$! #simulate a long process
-echo "THIS MAY TAKE A WHILE, PLEASE BE PATIENT WHILE ______ IS RUNNING..."
+(cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
+PID=$! 
+echo "PLEASE BE PATIENT WHILE [df_data_service] JRA IS COMPILING..."
 printf "["
 # While process is running...
 while kill -0 $PID 2> /dev/null; do 
@@ -47,9 +45,17 @@ while kill -0 $PID 2> /dev/null; do
 done
 printf "] df_data_service jar is compiled!"
 
-cd $CURRENT_DIR/df_git/df_certified_connects
-mvn package -DskipTests > /dev/null 2>&1
-echo "Step (2/3). Compiling DF app and connector jars complete"
+(cd $CURRENT_DIR/df_git/df_certified_connects && mvn package -DskipTests > /dev/null 2>&1) &
+
+PID=$! 
+echo "PLEASE BE PATIENT WHILE [df_certified_connects] JRA IS COMPILING..."
+printf "["
+# While process is running...
+while kill -0 $PID 2> /dev/null; do 
+    printf  "▓"
+    sleep 1
+done
+printf "] df_certified_connects jar is compiled!"
 
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
