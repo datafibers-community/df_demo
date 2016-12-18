@@ -104,10 +104,12 @@ fi
 sudo apt-get install -y maven git
 sudo apt-get install dos2unix
 
+# Convert all files to Linux in case git setting wrong in Win
+find /vagrant/ -type f -print0 | xargs -0 dos2unix --
+
 # Copy .profile and change owner to vagrant
 cp /vagrant/.profile /home/vagrant/
 chown vagrant:vagrant /home/vagrant/.profile
-dos2unix /home/vagrant/.profile
 source /home/vagrant/.profile
 
 cp -r /vagrant/etc /mnt/
@@ -156,9 +158,9 @@ schematool -dbType mysql -initSchema
 
 echo "***********************************************************************************************"
 echo "* 	DataFibers Virtual Machine Setup Completed."
-echo "*		Note,"
-echo "*     Flink Web Console port is mapping to 8001 to avoid conflict with Schema Registry Service."
+echo "*		Note, Flink Web Console port maps to 8001 from 8081 which is used by Schema Registry."
 echo "*		SSH address:127.0.0.1:2222."
 echo "*		SSH username/password:vagrant/vagrant"
+echo "*		Command: ssh vagrant@localhost -p 2222"
 echo "***********************************************************************************************"
 
