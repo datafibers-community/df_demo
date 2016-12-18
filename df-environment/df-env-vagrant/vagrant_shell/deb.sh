@@ -184,8 +184,8 @@ schematool -dbType mysql -initSchema
 
 echo "***********************************************************************************************"
 echo "* 	DataFibers Virtual Machine Setup Completed."
-echo "*		Note,"
-echo "*     Flink Web Console port is mapping to 8001 to avoid conflict with Schema Registry Service."
+echo "*		Note, Flink Web Console port maps to 8001 from 8081 which is used by Schema Registry."
 echo "*		SSH address:127.0.0.1:2222."
 echo "*		SSH username/password:vagrant/vagrant"
+echo "*		Command: ssh vagrant@localhost -p 2222"
 echo "***********************************************************************************************"
