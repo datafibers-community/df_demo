@@ -13,7 +13,7 @@ if [ -h /opt/confluent ]; then
     sleep 5
 fi
 
-for jar in $CURRENT_DIR/df_connect/*dependencies.jar; do
+for jar in $CURRENT_DIR/df_connect/*.jar; do
   CLASSPATH=${CLASSPATH}:${jar}
 done
 export CLASSPATH
