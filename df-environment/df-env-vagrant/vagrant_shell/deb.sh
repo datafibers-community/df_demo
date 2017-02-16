@@ -1,33 +1,27 @@
 #!/bin/bash
+set -e
 
-#Install profile - development
-dl_link_hadoop=http://mirrors.koehn.com/apache/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+#install flags
 install_hadoop=true
-
-dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 install_hive=true
+install_confluent=true
+install_flink=true
+install_mongo=true
 
+#software repository links
+dl_link_hadoop=http://mirrors.koehn.com/apache/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 release_confluent=-2.11
 #dl_link_confluent=http://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz
 dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
-install_confluent=true
-
 release_flink=-bin-hadoop26-scala_2.11
 dl_link_flink=http://apache.mirror.gtcomm.net/flink/flink-1.1.3/flink-1.1.3-bin-hadoop26-scala_2.11.tgz
-install_flink=true
-
-install_mongo=true
-
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
-install_elastic=false
-
-dl_link_zeppelin=http://mirror.its.dal.ca/apache/zeppelin/zeppelin-0.6.0/zeppelin-0.6.0-bin-all.tgz
-install_zeppelin=false
-
+dl_link_zeppelin=http://muug.ca/mirror/apache-dist/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz
 dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
-install_grafana=false
-
-set -e
+dl_link_spark=http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz
+dl_link_hbase=http://apache.mirror.globo.tech/hbase/stable/hbase-1.2.4-bin.tar.gz
+dl_link_oozie=http://apache.mirror.vexxhost.com/oozie/4.3.0/oozie-4.3.0.tar.gz
 
 # sample call install_flag soft_install dl_link, such as
 # soft_install $install_hadoop hadoop $dl_link_hadoop
@@ -108,6 +102,15 @@ soft_install $install_zeppelin zeppelin $dl_link_zeppelin
 
 # Install Flink
 soft_install $install_flink flink $dl_link_flink $release_flink
+
+# Install Spark
+soft_install $install_spark spark $dl_link_spark
+
+# Install HBase
+soft_install $install_hbase hbase $dl_link_hbase
+
+# Install Oozie
+soft_install $install_oozie oozie $dl_link_oozie
 
 # Install Grafana
 if [ "$install_grafana" = true ]; then
