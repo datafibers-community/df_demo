@@ -20,6 +20,7 @@ dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsea
 dl_link_zeppelin=http://muug.ca/mirror/apache-dist/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz
 dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
 dl_link_spark=http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz
+release_hbase=-bin
 dl_link_hbase=http://apache.mirror.globo.tech/hbase/stable/hbase-1.2.4-bin.tar.gz
 dl_link_oozie=http://apache.mirror.vexxhost.com/oozie/4.3.0/oozie-4.3.0.tar.gz
 
@@ -107,7 +108,7 @@ soft_install $install_flink flink $dl_link_flink $release_flink
 soft_install $install_spark spark $dl_link_spark
 
 # Install HBase
-soft_install $install_hbase hbase $dl_link_hbase
+soft_install $install_hbase hbase $dl_link_hbase $release_hbase
 
 # Install Oozie
 soft_install $install_oozie oozie $dl_link_oozie
