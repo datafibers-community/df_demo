@@ -30,8 +30,8 @@ echo "Q2. There are following optinal software to choose as well"
 while true; do
     read -p "Q2.1. Install Apache Zeppelin notebook (~700M), y/n?" q2   
     case $q2 in 
-        [y|* ) sed -i '/install_zeppelin=true/a install_elastic=true' ./vagrant_shell/deb.sh; break;;
-        [n]* ) sed -i '/install_zeppelin=true/a install_elastic=false' ./vagrant_shell/deb.sh; break;;      
+        [y|* ) sed -i '/install_zeppelin=true/a install_zeppelin=true' ./vagrant_shell/deb.sh; break;;
+        [n]* ) sed -i '/install_zeppelin=true/a install_zeppelin=false' ./vagrant_shell/deb.sh; break;;      
         [0]* ) exit;;
         * ) echo "Please answer y/n or exit with 0.";;
     esac
