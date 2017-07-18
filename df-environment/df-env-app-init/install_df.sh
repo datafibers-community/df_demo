@@ -49,6 +49,8 @@ git clone https://github.com/datafibers-community/df_demo.git
 git clone https://github.com/datafibers-community/df_data_service.git
 git clone https://github.com/datafibers-community/df_certified_connects.git
 
+sudo chmod 777 -R df_*
+
 (cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
 
 progress_bar Compiling_DF_Service
