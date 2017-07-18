@@ -7,6 +7,11 @@ install_hive=true
 install_confluent=true
 install_flink=true
 install_mongo=true
+install_elastic=false
+install_zeppelin=false
+install_spark=false
+install_hbase=false
+install_oozie=false
 
 #software repository links
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
@@ -29,33 +34,30 @@ dl_link_oozie=https://archive.apache.org/dist/oozie/4.3.0/oozie-4.3.0.tar.gz
 
 function soft_install
 {
-    install_flag=$1
+    install_flag=${1:-false}
+	install_soft_link=/opt/$2
     dl_link=$3
-    file_name=`basename $dl_link`
+	release_version=$4
+	
+	if [ "$install_flag" = true ]; then
+		file_name=`basename $dl_link`
 
-    case $file_name in
-        (*.tar.gz) install_folder=/opt/`basename $file_name .tar.gz`;;
-        (*.tar) install_folder=/opt/`basename $file_name .tar`;;
-        (*.tgz) install_folder=/opt/`basename $file_name .tgz`;;
-    esac
+		case $file_name in
+			(*.tar.gz) install_folder=/opt/`basename $file_name .tar.gz`;;
+			(*.tar) install_folder=/opt/`basename $file_name .tar`;;
+			(*.tgz) install_folder=/opt/`basename $file_name .tgz`;;
+		esac
 
-    install_soft_link=/opt/$2
-    release_version=$4
+		#remove release number for confluent, which has release number in URL, but not in the unzip folder
+		install_folder=${install_folder//$release_version}
 
-    #remove release number for confluent, which has release number in URL, but not in the unzip folder
-    install_folder=${install_folder//$release_version}
+		echo "install_flag=$install_flag"
+		echo "dl_link=$dl_link"
+		echo "file_name=$file_name"
+		echo "install_folder=$install_folder"
+		echo "install_soft_link=$install_soft_link"
 
-    echo "$install_flag"
-    echo "$dl_link"
-    echo "$file_name"
-    echo "$install_folder"
-    echo "$install_soft_link"
-
-    pushd /opt/
-
-    if [ "$install_flag" = true ]; then
-
-        echo "Start installing ${2} with version ${file_name}"
+		pushd /opt/
 
         if [ ! -e $install_folder ]; then
             pushd /tmp/vagrant-downloads
@@ -63,11 +65,12 @@ function soft_install
                 wget --progress=bar:force $dl_link --no-check-certificate
             fi
             popd
-            tar xvzf /tmp/vagrant-downloads/$file_name
+            tar xzf /tmp/vagrant-downloads/$file_name
             ln -sfn $install_folder $install_soft_link
         fi
+		echo "completed installing ${2} with version ${file_name}"
+		popd
     fi
-    popd
 }
 
 # Setup install staging folders
@@ -186,10 +189,10 @@ mysql -u root --password="mypassword" \
 
 schematool -dbType mysql -initSchema
 
-echo "***********************************************************************************************"
-echo "* 	DataFibers Virtual Machine Setup Completed."
-echo "*		Note, Flink Web Console port maps to 8001 from 8081 which is used by Schema Registry."
-echo "*		SSH address:127.0.0.1:2222."
-echo "*		SSH username/password:vagrant/vagrant"
-echo "*		Command: ssh vagrant@localhost -p 2222"
-echo "***********************************************************************************************"
+echo "***************************************************************************************"
+echo "*DataFibers Virtual Machine Setup Completed.                                          *"
+echo "*Note, Flink Web Console port maps to 8001 from 8081 which is used by Schema Registry.*"
+echo "*SSH address:127.0.0.1:2222.                                                          *"
+echo "*SSH username/password:vagrant/vagrant                                                *"
+echo "*Command: ssh vagrant@localhost -p 2222                                               *"
+echo "***************************************************************************************"
