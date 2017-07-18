@@ -9,7 +9,7 @@ install_flink=true
 install_mongo=true
 
 #software repository links
-dl_link_hadoop=http://mirrors.koehn.com/apache/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 release_confluent=-2.11
 #dl_link_confluent=http://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz
