@@ -10,19 +10,19 @@ install_mongo=true
 
 #software repository links
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
-dl_link_hive=http://apache.parentingamerica.com/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
+dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 release_confluent=-2.11
 #dl_link_confluent=http://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz
 dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
 release_flink=-bin-hadoop26-scala_2.11
-dl_link_flink=http://apache.mirror.globo.tech/flink/flink-1.2.0/flink-1.2.0-bin-hadoop26-scala_2.11.tgz
+dl_link_flink=https://archive.apache.org/dist/flink/flink-1.3.0/flink-1.3.0-bin-hadoop26-scala_2.11.tgz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
-dl_link_zeppelin=http://muug.ca/mirror/apache-dist/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz
+dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.2/zeppelin-0.7.2-bin-all.tgz
 dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
-dl_link_spark=http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz
+dl_link_spark=https://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz
 release_hbase=-bin
-dl_link_hbase=http://apache.mirror.globo.tech/hbase/stable/hbase-1.2.4-bin.tar.gz
-dl_link_oozie=http://apache.mirror.vexxhost.com/oozie/4.3.0/oozie-4.3.0.tar.gz
+dl_link_hbase=https://archive.apache.org/dist/hbase/1.3.0/hbase-1.3.0-bin.tar.gz
+dl_link_oozie=https://archive.apache.org/dist/oozie/4.3.0/oozie-4.3.0.tar.gz
 
 # sample call install_flag soft_install dl_link, such as
 # soft_install $install_hadoop hadoop $dl_link_hadoop
@@ -60,7 +60,7 @@ function soft_install
         if [ ! -e $install_folder ]; then
             pushd /tmp/vagrant-downloads
             if [ ! -e $file_name ]; then
-                wget --progress=bar:force $dl_link
+                wget --progress=bar:force $dl_link --no-check-certificate
             fi
             popd
             tar xvzf /tmp/vagrant-downloads/$file_name
