@@ -59,6 +59,8 @@ progress_bar Compiling_DF_Service
 
 progress_bar Compiling_DF_Connectors
 
+sleep 5
+
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/df_git/df_certified_connects/*/target/*dependencies.jar $CURRENT_DIR/df_connect
