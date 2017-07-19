@@ -25,7 +25,7 @@ echo "	df_data: 	where we put test data"
 echo "	df_git: 	where we download source code for build"
 sleep 5
 
-su vagrant
+sudo su vagrant
 
 if [ ! -d df_config ]; then
     mkdir -p df_config
@@ -50,8 +50,6 @@ rm -rf df_certified_connects
 git clone https://github.com/datafibers-community/df_demo.git
 git clone https://github.com/datafibers-community/df_data_service.git
 git clone https://github.com/datafibers-community/df_certified_connects.git
-
-sudo chown -R vagrant:vagrant df_*
 
 cd $CURRENT_DIR/df_git/df_data_service
 mvn package -DskipTests 
