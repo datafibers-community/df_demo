@@ -51,15 +51,13 @@ git clone https://github.com/datafibers-community/df_certified_connects.git
 
 sudo chown -R vagrant:vagrant df_*
 
-(cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
-
+cd $CURRENT_DIR/df_git/df_data_service
+(mvn package -DskipTests > /dev/null 2>&1) & 
 progress_bar Compiling_DF_Service
 
-(cd $CURRENT_DIR/df_git/df_certified_connects && mvn package -DskipTests > /dev/null 2>&1) &
-
+cd $CURRENT_DIR/df_git/df_certified_connects
+(mvn package -DskipTests > /dev/null 2>&1) &
 progress_bar Compiling_DF_Connectors
-
-sleep 5
 
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
 cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
