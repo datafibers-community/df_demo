@@ -2,6 +2,8 @@
 set -e
 
 #install flags
+install_java=true
+
 install_hadoop=true
 install_hive=true
 install_confluent=true
@@ -38,7 +40,7 @@ function soft_install
 	install_soft_link=/opt/$2
     dl_link=$3
 	release_version=$4
-	
+
 	if [ "$install_flag" = true ]; then
 		file_name=`basename $dl_link`
 
@@ -128,10 +130,23 @@ fi
 
 # Install MongoDB
 if [ "$install_mongo" = true ]; then
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
-sudo apt-get update
-sudo apt-get install -y mongodb-org
+    sudo rm -f /etc/apt/sources.list.d/mongodb*.list
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+    echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org
+fi
+
+#Install Java 8
+JAVA_VER=$(java -version 2>&1 | grep -i version | sed 's/.*version ".*\.\(.*\)\..*"/\1/; 1q')
+if [ "$JAVA_VER" -ne 8 ] && [ "$install_java" = "true" ]; then
+    echo "installing java 8 ..."
+    cd /opt/
+    wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz
+    tar -zxf jdk-8u141-linux-x64.tar.gz
+    ln -sfn /opt/jdk1.8.0_141 /opt/jdk
+    sudo update-alternatives --install /usr/bin/java java /opt/jdk/bin/java 8000
+    sudo update-alternatives --install /usr/bin/javac javac /opt/jdk/bin/javac 8000
 fi
 
 #Install Maven and Git
