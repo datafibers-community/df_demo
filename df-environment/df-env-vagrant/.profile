@@ -25,7 +25,7 @@ export HADOOP_CONF_DIR="/mnt/etc/hadoop"
 export HADOOP_LOG_DIR="/mnt/logs"
 export HIVE_CONF_DIR="/mnt/etc/hive"
 export HADOOP_USER_CLASSPATH_FIRST=true
-export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+export JAVA_HOME="/opt/jdk"
 
 PATH="/opt/hadoop/bin:$PATH"
 PATH="/opt/hadoop/sbin:$PATH"
