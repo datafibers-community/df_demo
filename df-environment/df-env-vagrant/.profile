@@ -21,13 +21,20 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
+export JAVA_HOME="/opt/jdk"
+
+export HADOOP_USER_CLASSPATH_FIRST=true
 export HADOOP_CONF_DIR="/mnt/etc/hadoop"
 export HADOOP_LOG_DIR="/mnt/logs"
 export HIVE_CONF_DIR="/mnt/etc/hive"
-export HADOOP_USER_CLASSPATH_FIRST=true
-export JAVA_HOME="/opt/jdk"
+export HADOOP_HOME="/opt/hadoop"
+export HIVE_HOME="/opt/hive"
+export CONFLUENT_HOME="/opt/confluent"
+export FLINK_HOME="/opt/flink"
 
-PATH="/opt/hadoop/bin:$PATH"
-PATH="/opt/hadoop/sbin:$PATH"
-PATH="/opt/confluent/bin:$PATH"
-PATH="/opt/hive/bin:$PATH"
+PATH="$JAVA_HOME/bin:$PATH"
+PATH="$HADOOP_HOME/bin:$PATH"
+PATH="$HADOOP_HOME/sbin:$PATH"
+PATH="$HIVE_HOME/bin:$PATH"
+PATH="$CONFLUENT_HOME/bin:$PATH"
+PATH="$FLINK_HOME/bin:$PATH"
