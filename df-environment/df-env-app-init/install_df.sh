@@ -27,11 +27,11 @@ DF_GIT_DF_CONNECT=df_certified_connects
 set -e
 echo "Starting installation DF packages at $CURRENT_DIR."
 echo "Step (1/3). Creating df folders start"
-echo "	$DF_CONFIG: 	where we put all configuration files"
-echo "	$DF_LIB:	where we put certified df connect and service jars"
-echo "	$DF_DATA: 		where we put sample test data"
-echo "	$DF_GIT: 		where we download source code for build"
-echo "	$DF_BIN: 		where we keep scripts for run and admin"
+printf "%-50s | %-50s\n" "$DF_CONFIG:" "where to find configuration files"
+printf "%-50s | %-50s\n" "$DF_LIB:" "where to find certified df connect and service jars"
+printf "%-50s | %-50s\n" "$DF_DATA:" "where to find sample test data"
+printf "%-50s | %-50s\n" "$DF_GIT:" "where to find source code"
+printf "%-50s | %-50s\n" "$DF_BIN:" "where to find scripts for run and admin"
 
 if [ ! -d $DF_CONFIG ]; then
     mkdir -p $DF_CONFIG
