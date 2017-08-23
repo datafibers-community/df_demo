@@ -83,7 +83,7 @@ echo "Step[3/3]-Applying patch on Flink web ui port completed"
 
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
 chmod +x $CURRENT_DIR/$DF_BIN/*.sh
-dos2unix $CURRENT_DIR/$DF_BIN/** 1 > /dev/null 2 > /dev/null
+dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/.profile ~
 source ~/.profile
