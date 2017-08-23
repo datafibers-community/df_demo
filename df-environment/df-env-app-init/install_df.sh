@@ -15,63 +15,76 @@ function progress_bar
 }
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DF_CONFIG=conf
+DF_LIB=lib
+DF_DATA=sample_data
+DF_GIT=repo
+DF_BIN=bin
+DF_GIT_DF_DEMO=df_demo
+DF_GIT_DF_SERVICE=df_data_service
+DF_GIT_DF_CONNECT=df_certified_connects
 
 set -e
 echo "Starting installation DF packages at $CURRENT_DIR."
 echo "Step (1/3). Creating df folders start"
-echo "	df_config: 	where we put all configuration files"
-echo "	df_connect:	where we put certified df connect jars"
-echo "	df_data: 	where we put test data"
-echo "	df_git: 	where we download source code for build"
-sleep 5
+echo "	$DF_CONFIG: 	where we put all configuration files"
+echo "	$DF_LIB:	where we put certified df connect and service jars"
+echo "	$DF_DATA: 		where we put sample test data"
+echo "	$DF_GIT: 		where we download source code for build"
+echo "	$DF_BIN: 		where we keep scripts for run and admin"
 
-if [ ! -d df_config ]; then
-    mkdir -p df_config
+if [ ! -d $DF_CONFIG ]; then
+    mkdir -p $DF_CONFIG
 fi
-if [ ! -d df_connect ]; then
-    mkdir -p df_connect
+if [ ! -d $DF_LIB ]; then
+    mkdir -p $DF_LIB
 fi
-if [ ! -d df_data ]; then
-    mkdir -p df_data
+if [ ! -d $DF_DATA ]; then
+    mkdir -p $DF_DATA
 fi
-if [ ! -d df_git ]; then
-    mkdir -p df_git
+if [ ! -d $DF_GIT ]; then
+    mkdir -p $DF_GIT
 fi
+if [ ! -d $DF_BIN ]; then
+    mkdir -p $DF_BIN
+fi
+echo "Step[1/3]-Creating df folders complete"
 
-echo "Step (1/3). Creating df folders complete"
+echo "Step[2/3]-Downloading DF source and build start"
+cd $DF_GIT
+rm -rf $DF_GIT_DF_DEMO 
+rm -rf $DF_GIT_DF_SERVICE 
+rm -rf $DF_GIT_DF_CONNECT 
+git clone https://github.com/datafibers-community/$DF_GIT_DF_DEMO.git
+git clone https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git
+git clone https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git
 
-echo "Step (2/3). Downloading DF source and build start"
+(cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & 
 
-cd df_git
-rm -rf df_demo 
-rm -rf df_data_service 
-rm -rf df_certified_connects 
-git clone https://github.com/datafibers-community/df_demo.git
-git clone https://github.com/datafibers-community/df_data_service.git
-git clone https://github.com/datafibers-community/df_certified_connects.git
-
-(cd $CURRENT_DIR/df_git/df_data_service && mvn package -DskipTests > /dev/null 2>&1) & 
 progress_bar Compiling_DF_Service
 
-(cd $CURRENT_DIR/df_git/df_certified_connects && mvn package -DskipTests > /dev/null 2>&1) &
+(cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT && mvn package -DskipTests > /dev/null 2>&1) &
+
 progress_bar Compiling_DF_Connectors
 
-cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/df_config
-cp -r $CURRENT_DIR/df_git/df_demo/df-environment/df-env-vagrant/etc/* /mnt/etc/
-cp $CURRENT_DIR/df_git/df_certified_connects/*/target/*dependencies.jar $CURRENT_DIR/df_connect
+cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/$DF_CONFIG
+cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /mnt/etc/
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
 
-echo "Step (2/3). Downloading DF source and build complete"
+echo "Step[2/3]-Downloading DF source and build complete"
 
-echo "Step (3/3). Applying patch on Flink web ui port start"
+echo "Step[3/3]-Applying patch on Flink web ui port start"
 # Map Flink Web Console port to 8001
 rm -f /opt/flink/conf/flink-conf.yaml.bk
 cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
 cp $CURRENT_DIR/df_config/flink/flink-conf.yaml /opt/flink/conf/
-echo "Step (3/3). Applying patch on Flink web ui port complete"
+echo "Step[3/3]-Applying patch on Flink web ui port complete"
 
 cd $CURRENT_DIR/
-cp $CURRENT_DIR/df_git/df_demo/df-environment/df-env-app-init/df* $CURRENT_DIR
-chmod +x *.sh
-sudo chown -R vagrant:vagrant *
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
+chmod +x $CURRENT_DIR/$DF_BIN/*.sh
+sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
+cp $CURRENT_DIR/$DF_BIN/df_ops.sh $CURRENT_DIR
+echo "All DataFibers packages are installed successfully." 
 
-echo "All DF packages are installed successfully." 
