@@ -70,7 +70,7 @@ progress_bar Compiling_DF_Connectors
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/$DF_CONFIG
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
-cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/*/target/*fat.jar $CURRENT_DIR/$DF_LIB
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/target/*fat.jar $CURRENT_DIR/$DF_LIB
 
 echo "Step[2/3]-Downloading DF source and build completed"
 
@@ -78,7 +78,7 @@ echo "Step[3/3]-Applying patch on Flink web ui port started"
 # Map Flink Web Console port to 8001
 rm -f /opt/flink/conf/flink-conf.yaml.bk
 cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
-cp $CURRENT_DIR/df_config/flink/flink-conf.yaml /opt/flink/conf/
+cp $CURRENT_DIR/$DF_CONFIG/flink/flink-conf.yaml /opt/flink/conf/
 echo "Step[3/3]-Applying patch on Flink web ui port completed"
 
 cd $CURRENT_DIR/
