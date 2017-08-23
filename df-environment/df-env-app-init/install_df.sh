@@ -26,7 +26,7 @@ DF_GIT_DF_CONNECT=df_certified_connects
 
 set -e
 echo "Starting installation DF packages at $CURRENT_DIR."
-echo "Step (1/3). Creating df folders start"
+echo "Step[1/3]-Creating df folders started"
 printf "%-15s: %-50s\n" "$DF_CONFIG" "where to find configuration files"
 printf "%-15s: %-50s\n" "$DF_LIB" "where to find certified df connect and service jars"
 printf "%-15s: %-50s\n" "$DF_DATA" "where to find sample or test data"
@@ -48,9 +48,9 @@ fi
 if [ ! -d $DF_BIN ]; then
     mkdir -p $DF_BIN
 fi
-echo "Step[1/3]-Creating df folders complete"
+echo "Step[1/3]-Creating df folders completed"
 
-echo "Step[2/3]-Downloading DF source and build start"
+echo "Step[2/3]-Downloading DF source and build started"
 cd $DF_GIT
 rm -rf $DF_GIT_DF_DEMO 
 rm -rf $DF_GIT_DF_SERVICE 
@@ -72,14 +72,14 @@ cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/*/target/*fat.jar $CURRENT_DIR/$DF_LIB
 
-echo "Step[2/3]-Downloading DF source and build complete"
+echo "Step[2/3]-Downloading DF source and build completed"
 
-echo "Step[3/3]-Applying patch on Flink web ui port start"
+echo "Step[3/3]-Applying patch on Flink web ui port started"
 # Map Flink Web Console port to 8001
 rm -f /opt/flink/conf/flink-conf.yaml.bk
 cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
 cp $CURRENT_DIR/df_config/flink/flink-conf.yaml /opt/flink/conf/
-echo "Step[3/3]-Applying patch on Flink web ui port complete"
+echo "Step[3/3]-Applying patch on Flink web ui port completed"
 
 cd $CURRENT_DIR/
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
