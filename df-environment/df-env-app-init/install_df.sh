@@ -55,9 +55,9 @@ cd $DF_GIT
 rm -rf $DF_GIT_DF_DEMO 
 rm -rf $DF_GIT_DF_SERVICE 
 rm -rf $DF_GIT_DF_CONNECT 
-git clone https://github.com/datafibers-community/$DF_GIT_DF_DEMO.git
-git clone https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git
-git clone https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git
+git clone -q https://github.com/datafibers-community/$DF_GIT_DF_DEMO.git
+git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git
+git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git
 
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & 
 
@@ -83,9 +83,9 @@ echo "Step[3/3]-Applying patch on Flink web ui port completed"
 
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
 chmod +x $CURRENT_DIR/$DF_BIN/*.sh
-dos2unix $CURRENT_DIR/$DF_BIN/**
-cp $CURRENT_DIR/$DF_BIN/df_ops.sh $CURRENT_DIR
+dos2unix $CURRENT_DIR/$DF_BIN/** 1 > /dev/null 2 > /dev/null
 sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
-sudo chown -R vagrant:vagrant $CURRENT_DIR/*.sh
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/.profile ~
+source ~/.profile
 echo "All DataFibers packages are installed successfully." 
 
