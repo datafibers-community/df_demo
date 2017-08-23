@@ -6,7 +6,7 @@ set -e
 #######################################################################################################
 
 usage () {
-    echo 'Usage : ./df_ops.sh <start|stop|restart|status|install|admin|update> <default|min|max|jar>> <<mode, sich sd d = debug f = format>>'
+    echo 'Usage: df_ops <start|stop|restart|status|format|install|admin|update> <default|min|max|jar>> <<mode, such as d = debug>>'
     exit
 }
 
@@ -22,7 +22,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DF_APP_NAME_PREFIX=df-data-service
 
 if [ -z ${DF_ROOT+x} ]; then
-	echo "DF_ROOT       is unset, use DF_APP_CONFIG=${CURRENT_DIR} ";
+	echo "DF_ROOT is unset, use DF_APP_CONFIG=${CURRENT_DIR} ";
 	DF_ROOT=${CURRENT_DIR}
 fi
 if [ -z ${DF_APP_CONFIG+x} ]; then
@@ -30,137 +30,149 @@ if [ -z ${DF_APP_CONFIG+x} ]; then
 	DF_APP_CONFIG=/mnt/etc
 fi
 if [ -z ${DF_APP_LOG+x} ]; then
-	echo "DF_APP_LOG    is unset, use DF_APP_LOG=/mnt/logs ";
+	echo "DF_APP_LOG is unset, use DF_APP_LOG=/mnt/logs ";
 	DF_APP_LOG=/mnt/logs
 fi
 if [ -z ${DF_APP_DEP+x} ]; then
-	echo "DF_APP_DEP    is unset, use DF_APP_DEP=/opt ";
+	echo "DF_APP_DEP is unset, use DF_APP_DEP=/opt ";
 	DF_APP_DEP=/opt
 fi
+if [ -z ${DF_CONFIG+x} ]; then
+	echo "DF_CONFIG is unset, use DF_CONFIG=$DF_ROOT/conf ";
+	DF_CONFIG=$DF_ROOT/conf
+fi
+if [ -z ${DF_LIB+x} ]; then
+	echo "DF_LIB is unset, use DF_LIB=$DF_ROOT/lib ";
+	DF_LIB=$DF_ROOT/lib
+fi
 
-echo "********Start DF Operations********"
+
+echo "********Starting DF Operations********"
 
 format_all () {
-echo "Formatting all data & logs - started"
 rm -rf /mnt/kafka-logs/
 rm -rf /mnt/zookeeper/
 rm -rf /mnt/dfs/name/*
 rm -rf /mnt/dfs/data/*
 rm -rf /mnt/connect.offsets
 rm -rf /mnt/logs/*
-echo "Formatting all data & logs - completed"
-echo "Formatting Hadoop NameNode - started"
+echo "Formatted all data & logs"
 hadoop namenode -format -force -nonInteractive > /dev/null 2>&1
-echo "Formatting Hadoop NameNode - completed"
-echo "Formatting all - completed."
+echo "Formatted hadoop"
 }
 
 start_confluent () {
 if [ -h /opt/confluent ]; then
-	echo "Starting Confluent Platform - Zookeeper, Kafka, Schema Registry"
 	zookeeper-server-start ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2>${DF_APP_LOG}/zk.log &
 	sleep 3
 	kafka-server-start ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	sleep 3
 	schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 	sleep 3
-	for jar in ${DF_ROOT}/df_connect/*.jar; do
+	echo "Started [Zookeeper|Kafka|Schema Registry]"
+	for jar in ${DF_LIB}/*.jar; do
 	  CLASSPATH=${CLASSPATH}:${jar}
 	done
 	export CLASSPATH
-	connect-distributed ${DF_ROOT}/df_config/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
+	connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
 	sleep 2
+	echo "Started [Kafka Connect]"
 else
-	echo "Confluent Kafka not found"
+	echo "Confluent Platform Not Found"
 fi
 }
 
 stop_confluent () {
 if [ -h /opt/confluent ]; then
-	echo "Shutting down Confluent Platform - Zookeeper, Kafka, Schema Registry"
 	schema-registry-stop ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
+	echo "Shut Down [Zookeeper|Kafka|Schema Registry]"
+	sid=$(getSID supportedkafka)
+	if [ ! -z "${sid}" ]; then
+    kill -9 ${sid}
+    fi
+    sid=$(getSID connectdistributed)
+	if [ ! -z "${sid}" ]; then
+    kill -9 ${sid}
+    fi
+	echo "Shut Down [Kafka Connect]"
 else
-	echo "Confluent Kafka not found"
+	echo "Confluent Kafka Not Found"
 fi
 }
 
 start_flink () {
 if [ -h /opt/flink ]; then
-	echo "Starting Apache Flink"
-	start-cluster.sh
-	sleep 5
+	start-cluster.sh 1 > /dev/null 2 > /dev/null
+	echo "Started [Apache Flink]"
+	sleep 3
 else
-	echo "Apache Flink not found"
+	echo "Apache Flink Not Found"
 fi
 }
 
 stop_flink () {
 if [ -h /opt/flink ]; then
-	echo "Shutting down Apache Flink"
-	stop-cluster.sh
+	stop-cluster.sh 1 > /dev/null 2 > /dev/null
+	echo "Shut Down [Apache Flink]"
 	sleep 2
 else
-	echo "Apache Flink not found"
+	echo "Apache Flink Not Found"
 fi
 }
 
 start_hadoop () {
 if [ -h /opt/hadoop ]; then
-	echo "Starting Hadoop. Make sure you format HDP using init_all.sh if any error happens"
-	hadoop-daemon.sh start namenode
-	hadoop-daemon.sh start datanode
+	hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
+	hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
+	echo "Started [Hadoop]"
 	sleep 5
 else
-	echo "Apache Hadoop not found"
+	echo "Apache Hadoop Not Found"
 fi
 if [ -h /opt/hive ]; then
-	echo "Starting Apache Hive Metastore"
 	hive --service metastore 1>> ${DF_APP_LOG}/metastore.log 2>> ${DF_APP_LOG}/metastore.log &
-	echo "Starting Apache Hive Server2"
+	echo "Started [Apache Hive Metastore]"	
 	hive --service hiveserver2 1>> ${DF_APP_LOG}/hiveserver2.log 2>> ${DF_APP_LOG}/hiveserver2.log &
+	echo "Started [Apache Hive Server2]"	
 	sleep 5
 else
-	echo "Apache Hive not found"
+	echo "Apache Hive Not Found"
 fi
 }
 
 stop_hadoop () {
-    if [ -h /opt/hadoop ]; then
-        echo "Shutting down Hadoop"
-        hadoop-daemon.sh stop datanode
-        hadoop-daemon.sh stop namenode
-        sleep 2
-    else
-        echo "Apache Hadoop not found"
-    fi
-
-    sid=$(getSID hivemetastore)
-    echo "Shutting down Apache Hive MetaStore"
-    kill -9 ${sid} 2> /dev/null
-    sleep 2
-    sid=$(getSID hiveserver2)
-    echo "Shutting down Apache Hive Server2"
-    kill -9 ${sid} 2> /dev/null
+echo "Shutting down Hadoop"
+hadoop-daemon.sh stop datanode
+hadoop-daemon.sh stop namenode
+sid=$(getSID hivemetastore)
+kill -9 ${sid} 2> /dev/null
+echo "Shut Down [Apache Hive MetaStore]"
+sleep 2
+sid=$(getSID hiveserver2)
+kill -9 ${sid} 2> /dev/null
+echo "Shut Down [Apache Hive Server2]"
 }
 
 start_df() {
 if [[ "${mode}" =~ (^| )d($| ) ]]; then	
-	java -jar ${DF_ROOT}/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	java -jar ${DF_ROOT}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
 else
-	java -jar ${DF_ROOT}/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	java -jar ${DF_ROOT}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
 fi
 }
 
 stop_df() {
 sid=$(getSID $DF_APP_NAME_PREFIX)
 if [ -z "${sid}" ]; then
-	echo "NO running DataFibers service found."
+	echo "Running DF Data Service Not Found."
 else
-	echo "Shutting down DF Service at $sid"
 	kill -9 ${sid}
-if
+	echo "Shut Down [DF Data Service] at [$sid]"
+fi
 }
 
 getSID() {
@@ -173,17 +185,12 @@ status () {
 local service_name=$1
 local service_name_show=$2
 sid=$(getSID $service_name)
-if [ -z "${sid}" ]; then
-	echo "NO running $service_name_show service found."
-else
-	echo "Found Running $service_name_show service at ${sid}"
+if [ ! -z "${sid}" ]; then
+	echo "Found Running service [$service_name_show] at [${sid}]"
 fi
 }
 
 start_all_service () {
-if [[ "${mode}" =~ (^| )f($| ) ]]; then	
-	format_all
-fi
 if [ "${service}" = "min" ]; then
 	start_confluent
 	start_df
@@ -246,11 +253,6 @@ echo "Install DataFibers ..."
 curl -sL http://www.datafibers.com/install | bash -
 }
 
-update_all () {
-
-}
-
-
 if [ "${action}" = "start" ] ; then
 	start_all_service
 elif [ "${action}" = "stop" ]; then
@@ -261,6 +263,8 @@ elif [ "${action}" = "status" ]; then
 	status_all
 elif [ "${action}" = "install" ]; then
 	install_df	
+elif [ "${action}" = "format" ]; then
+	format_all		
 elif [ "${action}" = "admin" ]; then
 	echo "not support yet"
 elif [ "${action}" = "update" ]; then
