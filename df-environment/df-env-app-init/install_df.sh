@@ -81,10 +81,11 @@ cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
 cp $CURRENT_DIR/$DF_CONFIG/flink/flink-conf.yaml /opt/flink/conf/
 echo "Step[3/3]-Applying patch on Flink web ui port completed"
 
-cd $CURRENT_DIR/
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
 chmod +x $CURRENT_DIR/$DF_BIN/*.sh
-sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
+dos2unix $CURRENT_DIR/$DF_BIN/**
 cp $CURRENT_DIR/$DF_BIN/df_ops.sh $CURRENT_DIR
+sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
+sudo chown -R vagrant:vagrant $CURRENT_DIR/*.sh
 echo "All DataFibers packages are installed successfully." 
 
