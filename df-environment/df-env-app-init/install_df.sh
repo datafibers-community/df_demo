@@ -17,7 +17,7 @@ function progress_bar
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DF_CONFIG=conf
 DF_LIB=lib
-DF_DATA=sample_data
+DF_DATA=samples
 DF_GIT=repo
 DF_BIN=bin
 DF_GIT_DF_DEMO=df_demo
@@ -27,11 +27,11 @@ DF_GIT_DF_CONNECT=df_certified_connects
 set -e
 echo "Starting installation DF packages at $CURRENT_DIR."
 echo "Step (1/3). Creating df folders start"
-printf "%-50s | %-50s\n" "$DF_CONFIG:" "where to find configuration files"
-printf "%-50s | %-50s\n" "$DF_LIB:" "where to find certified df connect and service jars"
-printf "%-50s | %-50s\n" "$DF_DATA:" "where to find sample test data"
-printf "%-50s | %-50s\n" "$DF_GIT:" "where to find source code"
-printf "%-50s | %-50s\n" "$DF_BIN:" "where to find scripts for run and admin"
+printf "%-15s: %-50s\n" "$DF_CONFIG" "where to find configuration files"
+printf "%-15s: %-50s\n" "$DF_LIB" "where to find certified df connect and service jars"
+printf "%-15s: %-50s\n" "$DF_DATA" "where to find sample or test data"
+printf "%-15s: %-50s\n" "$DF_GIT" "where to find source code"
+printf "%-15s: %-50s\n" "$DF_BIN" "where to find scripts for run and admin"
 
 if [ ! -d $DF_CONFIG ]; then
     mkdir -p $DF_CONFIG
@@ -70,7 +70,7 @@ progress_bar Compiling_DF_Connectors
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/$DF_CONFIG
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
-cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/*/target/*fat.jar $CURRENT_DIR/$DF_LIB
 
 echo "Step[2/3]-Downloading DF source and build complete"
 
