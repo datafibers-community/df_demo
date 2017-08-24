@@ -21,9 +21,9 @@ mode=${2:-d}
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DF_APP_NAME_PREFIX=df-data-service
 
-if [ -z ${DF_ROOT+x} ]; then
-	echo "DF_ROOT is unset, use DF_APP_CONFIG=${CURRENT_DIR} ";
-	DF_ROOT=${CURRENT_DIR}
+if [ -z ${DF_HOME+x} ]; then
+	echo "DF_HOME is unset, exit"
+	exit
 fi
 if [ -z ${DF_APP_CONFIG+x} ]; then
 	echo "DF_APP_CONFIG is unset, use DF_APP_CONFIG=/mnt/etc ";
@@ -38,12 +38,12 @@ if [ -z ${DF_APP_DEP+x} ]; then
 	DF_APP_DEP=/opt
 fi
 if [ -z ${DF_CONFIG+x} ]; then
-	echo "DF_CONFIG is unset, use DF_CONFIG=$DF_ROOT/conf ";
-	DF_CONFIG=$DF_ROOT/conf
+	echo "DF_CONFIG is unset, use DF_CONFIG=$DF_HOME/conf ";
+	DF_CONFIG=$DF_HOME/conf
 fi
 if [ -z ${DF_LIB+x} ]; then
-	echo "DF_LIB is unset, use DF_LIB=$DF_ROOT/lib ";
-	DF_LIB=$DF_ROOT/lib
+	echo "DF_LIB is unset, use DF_LIB=$DF_HOME/lib ";
+	DF_LIB=$DF_HOME/lib
 fi
 
 
@@ -157,10 +157,10 @@ echo "Shut Down [Apache Hive Server2]"
 
 start_df() {
 if [[ "${mode}" =~ (^| )d($| ) ]]; then	
-	java -jar ${DF_ROOT}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
 	echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
 else
-	java -jar ${DF_ROOT}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+	java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
 	echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
 fi
 }

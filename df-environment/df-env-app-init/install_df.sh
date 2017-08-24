@@ -85,7 +85,11 @@ cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURR
 chmod +x $CURRENT_DIR/$DF_BIN/*.sh
 dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
-cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/.profile ~
+
+sed -i '/DF_HOME/d' ~/.profile
+echo "export DF_HOME=\"$HOME/$CURRENT_DIR\"" >> ~/.profile
+echo "PATH=\"$DF_HOME/bin:$PATH\"" >> ~/.profile
 source ~/.profile
+
 echo "All DataFibers packages are installed successfully." 
 
