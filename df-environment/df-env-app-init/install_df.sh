@@ -87,8 +87,8 @@ dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/$DF_BIN/*.sh
 
 sed -i '/DF_HOME/d' ~/.profile
-echo "export DF_HOME=\"$HOME/$CURRENT_DIR\"" >> ~/.profile
-echo "PATH=\"$DF_HOME/bin:$PATH\"" >> ~/.profile
+echo "export DF_HOME=\"$CURRENT_DIR\"" >> ~/.profile
+echo "PATH=\"\$DF_HOME/bin:\$PATH\"" >> ~/.profile
 source ~/.profile
 
 echo "All DataFibers packages are installed successfully." 
