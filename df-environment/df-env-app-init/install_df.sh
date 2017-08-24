@@ -14,10 +14,9 @@ function progress_bar
     printf "] $installed IS COMPLETED!"
     echo
 }
-echo "current user - $User"
-echo "current whoami - $(whoami)"
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DF_USER_HOME=/home/vagrant
 DF_CONFIG=conf
 DF_LIB=lib
 DF_DATA=samples
@@ -88,10 +87,10 @@ chmod +x $CURRENT_DIR/$DF_BIN/*.sh
 dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/*
 
-sed -i '/DF_HOME/d' ~/.profile
-echo "export DF_HOME=\"$CURRENT_DIR\"" >> ~/.profile
-echo "PATH=\"\$DF_HOME/bin:\$PATH\"" >> ~/.profile
-source /home/vagrant/.profile
+sed -i '/DF_HOME/d' $DF_USER_HOME/.profile
+echo "export DF_HOME=\"$CURRENT_DIR\"" >> $DF_USER_HOME/.profile
+echo "PATH=\"\$DF_HOME/bin:\$PATH\"" >> $DF_USER_HOME/.profile
+source $DF_USER_HOME/.profile
 
 echo "All DataFibers packages are installed successfully." 
 
