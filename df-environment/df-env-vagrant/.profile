@@ -31,7 +31,6 @@ export HADOOP_HOME="/opt/hadoop"
 export HIVE_HOME="/opt/hive"
 export CONFLUENT_HOME="/opt/confluent"
 export FLINK_HOME="/opt/flink"
-export DF_HOME="$HOME/df"
 
 PATH="$JAVA_HOME/bin:$PATH"
 PATH="$HADOOP_HOME/bin:$PATH"
@@ -39,7 +38,6 @@ PATH="$HADOOP_HOME/sbin:$PATH"
 PATH="$HIVE_HOME/bin:$PATH"
 PATH="$CONFLUENT_HOME/bin:$PATH"
 PATH="$FLINK_HOME/bin:$PATH"
-PATH="$DF_HOME/bin:$PATH"
 
 alias df_ops='df_ops.sh'
 
