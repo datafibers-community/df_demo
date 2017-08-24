@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+su vagrant
 function progress_bar
 {
     installed=$1
@@ -24,7 +26,6 @@ DF_GIT_DF_DEMO=df_demo
 DF_GIT_DF_SERVICE=df_data_service
 DF_GIT_DF_CONNECT=df_certified_connects
 
-set -e
 echo "Starting installation DF packages at $CURRENT_DIR."
 echo "Step[1/3]-Creating df folders started"
 printf "%-15s: %-50s\n" "$DF_CONFIG" "where to find configuration files"
