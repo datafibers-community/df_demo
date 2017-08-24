@@ -6,35 +6,35 @@ set -e
 #######################################################################################################
 
 usage () {
-    echo 'Usage:' 
-	echo '  df_ops [operation] [service] [option]'
-	echo ''	
-	echo 'Variables:'
-	echo 'operation [start|stop|restart|status|format|admin|install|help]'
-	echo '  start|stop|restart: perform start|stop|restart operations'
-	echo '  status: check status of data service and environment'
-	echo '  format: format all data and logs'	
-	echo '  admin: perform data service admin operations'
-	echo '  install: reinstall df packages'		
-	echo '  help: show this help'	
-    echo ''	
-	echo 'service [default|min|max|jar]'
-	echo '  default: run kafka, flink, and df. This is the default option.'
-	echo '  min: run kafka and df'	
-	echo '  max: run kafka, flink, hadoop, and df.'
-	echo '  jar: run df jar only'		
-    echo ''		
-	echo 'option [d]'
-	echo '  d: running in debug mode'
-    echo ''	
-	echo 'Examples:'	
-	echo 'df_ops start //Run df default envirnment and data service'
-	echo 'df_ops format //Format environment data and logs'
-	echo 'df_ops start -d //Run df default envirnment and data service in debug mode'
-	echo 'df_ops restart jar -d //Restart df jar file in debug mode'
-	echo 'df_ops admin idi //Run df admin tool - import_df_install to reset df_installed collection'		
-	echo 'df_ops start max -d //Run df max envirnment and data service in debug mode'	
-    echo ''		
+    echo "Usage:" 
+	echo "  df_ops [operation] [service] [option]"
+	echo ""	
+	echo "Variables:"
+	echo "operation [start|stop|restart|status|format|admin|install|help]"
+	echo "  start|stop|restart: perform start|stop|restart operations"
+	echo "  status: check status of data service and environment"
+	echo "  format: format all data and logs"	
+	echo "  admin: perform data service admin operations"
+	echo "  install: reinstall df packages"		
+	echo "  help: show this help"	
+    echo ""	
+	echo "service [default|min|max|jar]"
+	echo "  default: run kafka, flink, and df. This is the default option."
+	echo "  min: run kafka and df"	
+	echo "  max: run kafka, flink, hadoop, and df."
+	echo "  jar: run df jar only"		
+    echo ""		
+	echo "option [d]"
+	echo "  d: running in debug mode"
+    echo ""	
+	echo "Examples:"	
+	echo "df_ops start //Run df default envirnment and data service"
+	echo "df_ops format //Format environment data and logs"
+	echo "df_ops start -d //Run df default envirnment and data service in debug mode"
+	echo "df_ops restart jar -d //Restart df jar file in debug mode"
+	echo "df_ops admin idi //Run df admin tool - import_df_install to reset df_installed collection"		
+	echo "df_ops start max -d //Run df max envirnment and data service in debug mode"	
+    echo ""		
     exit
 }
 
@@ -304,8 +304,8 @@ elif [ "${action}" = "admin" ]; then
 elif [ "${action}" = "help" ]; then
 	usage	
 elif [ "${action}" = "update" ]; then
-	echo "not support yet"
+	echo "Not support yet"
 else
-    echo "wrong command entered."
+    echo "Wrong command entered."
     usage
 fi
