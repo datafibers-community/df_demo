@@ -1,0 +1,5 @@
+update_desc="Update Confluent to v3.3.0 which including kafka 0.11.0\n This version of Kafka has a java admin client API. \n Schema Registry supports DELETE api call.\n"
+install_soft_link
+release_version=-2.11
+dl_link=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
+update_conf=true
