@@ -40,4 +40,5 @@ PATH="$CONFLUENT_HOME/bin:$PATH"
 PATH="$FLINK_HOME/bin:$PATH"
 
 alias df_ops='df_ops.sh'
+alias df='df_ops.sh'
 
