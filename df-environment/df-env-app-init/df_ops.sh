@@ -46,8 +46,17 @@ action=${1}
 service=${2:-default}
 mode=${2:-d}
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DF_APP_NAME_PREFIX=df-data-service
+KAFKA_DAEMON_NAME=SupportedKafka
+KAFKA_CONNECT_DAEMON_NAME=connectdistributed
+ZOO_KEEPER_DAEMON_NAME=QuorumPeerMain
+SCHEMA_REGISTRY_DAEMON_NAME=schemaregistrymain
+FLINK_JM_DAEMON_NAME=JobManager
+FLINK_TM_DAEMON_NAME=TaskManager
+HADOOP_NN_DAEMON_NAME=NameNode
+HADOOP_DN_DAEMON_NAME=DataNode
+HIVE_SERVER_DAEMON_NAME=hiveserver2
+HIVE_METADATA_NAME=HiveMetaStore
 
 if [ -z ${DF_HOME+x} ]; then
 	echo "DF_HOME is unset, exit"
@@ -91,21 +100,47 @@ hadoop namenode -format -force -nonInteractive > /dev/null 2>&1
 echo "Formatted hadoop"
 }
 
-start_confluent () {
+start_confluent () {	
 if [ -h /opt/confluent ]; then
-	zookeeper-server-start ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2>${DF_APP_LOG}/zk.log &
-	sleep 3
-	kafka-server-start ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
-	sleep 3
-	schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
-	sleep 3
+	sid=$(getSID ${ZOO_KEEPER_DAEMON_NAME})
+	if [ -z "${sid}" ]; then
+		zookeeper-server-start ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2>${DF_APP_LOG}/zk.log &
+		sleep 3
+	else
+		echo "Found ZooKeeper daemon running. Please [stop] or [restart]."
+	fi	
+
+	sid=$(getSID ${KAFKA_DAEMON_NAME})
+	if [ -z "${sid}" ]; then
+		kafka-server-start ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
+		sleep 3
+	else
+		echo "Found Kafka daemon running. Please [stop] or [restart]."
+	fi	
+
+	sid=$(getSID ${SCHEMA_REGISTRY_DAEMON_NAME})
+	if [ -z "${sid}" ]; then
+		schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
+		sleep 3
+	else
+		echo "Found Schema Registry daemon running. Please [stop] or [restart]."
+	fi
+	
 	echo "Started [Zookeeper|Kafka|Schema Registry]"
+
 	for jar in ${DF_LIB}/*dependencies.jar; do
 	  CLASSPATH=${CLASSPATH}:${jar}
 	done
 	export CLASSPATH
-	connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
-	sleep 2
+
+	sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
+	if [ -z "${sid}" ]; then
+		connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
+		sleep 2
+	else
+		echo "Found Kafka Connect daemon running. Please [stop] or [restart]."
+	fi
+
 	echo "Started [Kafka Connect]"
 else
 	echo "Confluent Platform Not Found"
@@ -118,13 +153,14 @@ if [ -h /opt/confluent ]; then
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
 	echo "Shut Down [Zookeeper|Kafka|Schema Registry]"
-	sid=$(getSID supportedkafka)
+
+	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ ! -z "${sid}" ]; then
-    kill -9 ${sid}
+    	kill -9 ${sid}
     fi
-    sid=$(getSID connectdistributed)
+    sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
 	if [ ! -z "${sid}" ]; then
-    kill -9 ${sid}
+    	kill -9 ${sid}
     fi
 	echo "Shut Down [Kafka Connect]"
 else
@@ -134,9 +170,15 @@ fi
 
 start_flink () {
 if [ -h /opt/flink ]; then
-	start-cluster.sh 1 > /dev/null 2 > /dev/null
-	echo "Started [Apache Flink]"
-	sleep 3
+	sid=$(getSID ${FLINK_JM_DAEMON_NAME})
+	sid2=$(getSID ${FLINK_TM_DAEMON_NAME})
+	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
+		start-cluster.sh 1 > /dev/null 2 > /dev/null
+		echo "Started [Apache Flink]"
+		sleep 3
+	else
+		echo "Found Flink daemon running. Please [stop] or [restart]."
+	fi
 else
 	echo "Apache Flink Not Found"
 fi
@@ -154,10 +196,16 @@ fi
 
 start_hadoop () {
 if [ -h /opt/hadoop ]; then
-	hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
-	hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
-	echo "Started [Hadoop]"
-	sleep 5
+	sid=$(getSID ${HADOOP_NN_DAEMON_NAME})
+	sid2=$(getSID ${HADOOP_DN_DAEMON_NAME})
+	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
+		hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
+		hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
+		echo "Started [Hadoop]"
+		sleep 5
+	else
+		echo "Found Hadoop daemon running. Please [stop] or [restart]."
+	fi	
 else
 	echo "Apache Hadoop Not Found"
 fi
@@ -186,13 +234,18 @@ echo "Shut Down [Apache Hive Server2]"
 }
 
 start_df() {
-if [[ "${mode}" =~ (^| )d($| ) ]]; then	
-	java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-	echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
+sid=$(getSID ${DF_APP_NAME_PREFIX})
+if [ -z "${sid}" ]; then	
+	if [[ "${mode}" =~ (^| )d($| ) ]]; then	
+		java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+		echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
+	else
+		java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+		echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
+	fi
 else
-	java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-	echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
-fi
+	echo "Found DF daemon running. Please [stop] or [restart]."
+fi		
 }
 
 stop_df() {
@@ -272,16 +325,17 @@ start_all_service
 }
 
 status_all () {
-    status $DF_APP_NAME_PREFIX DataFibers
-    status SupportedKafka Kafka
-    status connectdistributed Kafka_Connect
-    status schemaregistrymain Schema_Registry
-    status JobManager Flink_JobManager
-    status TaskManager Flink_TaskManager
-    status NameNode HadoopNN
-    status DataNode HadoopDN
-    status hiveserver2 HiveServer2
-    status hivemetastore HiveMetaStore
+    status ${DF_APP_NAME_PREFIX} DataFibers
+    status ${ZOO_KEEPER_DAEMON_NAME} ZooKeeper    
+    status ${KAFKA_DAEMON_NAME} Kafka
+    status ${KAFKA_CONNECT_DAEMON_NAME} Kafka_Connect
+    status ${SCHEMA_REGISTRY_DAEMON_NAME} Schema_Registry
+    status ${FLINK_JM_DAEMON_NAME} Flink_JobManager
+    status ${FLINK_TM_DAEMON_NAME} Flink_TaskManager
+    status ${HADOOP_NN_DAEMON_NAME} HadoopNN
+    status ${HADOOP_DN_DAEMON_NAME} HadoopDN
+    status ${HIVE_SERVER_DAEMON_NAME} HiveServer2
+    status ${HIVE_METADATA_NAME} HiveMetaStore
 }
 
 install_df () {
