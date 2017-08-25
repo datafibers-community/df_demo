@@ -10,7 +10,7 @@ usage () {
 	echo "  df_ops [operation] [service] [option]"
 	echo ""	
 	echo "Variables:"
-	echo "operation [start|stop|restart|status|format|admin|install|help]"
+	echo "operation [start|stop|restart|status|format|admin|install|update|help]"
 	echo "  start|stop|restart: perform start|stop|restart operations"
 	echo "  status: check status of data service and environment"
 	echo "  format: format all data and logs"	
@@ -34,6 +34,7 @@ usage () {
 	echo "df_ops restart jar -d //Restart df jar file in debug mode"
 	echo "df_ops admin idi //Run df admin tool - import_df_install to reset df_installed collection"		
 	echo "df_ops start max -d //Run df max envirnment and data service in debug mode"	
+	echo "df_ops update //Run df update software dependecies and so on"	
     echo ""		
     exit
 }
@@ -69,7 +70,12 @@ if [ -z ${DF_LIB+x} ]; then
 	echo "DF_LIB is unset, use DF_LIB=$DF_HOME/lib ";
 	DF_LIB=$DF_HOME/lib
 fi
+if [ -z ${DF_REP+x} ]; then
+	echo "DF_REP is unset, use DF_REP=$DF_HOME/repo ";
+	DF_REP=$DF_HOME/repo
+fi
 
+DF_UPDATE_HIST_FILE_NAME=.df_update_history
 DF_APP_CONFIG=${DF_APP_MNT}/etc
 DF_APP_LOG=${DF_APP_MNT}/logs
 DF_INSTALL_URL=http://www.datafibers.com/install
@@ -342,6 +348,83 @@ echo "Install DataFibers ..."
 curl -sL ${DF_INSTALL_URL} | bash -
 }
 
+update_df () {
+# Setup download folder
+if [ ! -d /tmp/vagrant-downloads ]; then
+    mkdir -p /tmp/vagrant-downloads
+fi
+chmod a+rw /tmp/vagrant-downloads
+
+# Check or Create update history file
+if [ ! -e $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME ]; then
+	touch $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME
+fi
+
+# Fetch new update
+cd $DF_REP/df_demo
+git pull -q
+cd $DF_REP/df_demo/df-update
+for update_file in *.update; do 
+	if grep -q $update_file $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME; then
+		echo "[Ign] update [$update_file].".
+	else
+		echo "[New] update [$update_file]."
+		echo "==================================================="
+		echo "Update Description:"
+		echo -e $(grep "update_desc" $update_file | sed "s/update_desc=//g;s/\"//g")
+		echo "==================================================="
+		read -p "Do you want to apply the update? y/n?" q1
+		if [ "$q1" = "y" ]; then
+			# Apply the update
+			source $DF_REP/df_demo/df-update/$update_file
+			soft_install true $install_soft_link $install_folder $dl_link $post_run_script
+			#Log in to history
+			echo "appled $update_file" >> $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME
+		else
+			echo "The update [$update_file] is ignored."
+		fi
+	fi
+done
+}
+
+soft_install () {
+    install_flag=${1:-false}
+	install_soft_link=$2
+	install_folder=$3
+    dl_link=$4
+	release_version=$5
+
+	if [ "$install_flag" = true ]; then
+		file_name=`basename $dl_link`
+
+		echo "[INFO] install_flag=$install_flag"
+		echo "[INFO] dl_link=$dl_link"
+		echo "[INFO] file_name=$file_name"
+		echo "[INFO] install_folder=$install_folder"
+		echo "[INFO] install_soft_link=$install_soft_link"
+
+        if [ ! -e /opt/$install_folder ]; then
+            cd /tmp/vagrant-downloads
+            if [ ! -e $file_name ]; then
+                wget --progress=bar:force $dl_link --no-check-certificate
+            fi
+			mkdir -p /opt/$install_folder && tar xf /tmp/vagrant-downloads/$file_name -C /opt/$install_folder
+            ln -sfn /opt/$install_folder /opt/$install_soft_link
+		else
+			echo "Found $install_folder, ignore installation. "
+        fi
+		echo "Installed ${file_name}"
+    fi
+	
+	# Copy over conf files as well
+	if [ ! -z "$post_run_script" ]; then
+		echo "Running post update script $post_run_script"
+		chmod +x $DF_REP/df_demo/df-update/$post_run_script
+		cd $DF_HOME
+		./repo/df_demo/df-update/$post_run_script
+	fi
+}
+
 if [ "${action}" = "start" ] ; then
 	start_all_service
 elif [ "${action}" = "stop" ]; then
@@ -359,7 +442,7 @@ elif [ "${action}" = "admin" ]; then
 elif [ "${action}" = "help" ]; then
 	usage	
 elif [ "${action}" = "update" ]; then
-	echo "Not support yet"
+	update_df
 else
     echo "Wrong command entered."
     usage
