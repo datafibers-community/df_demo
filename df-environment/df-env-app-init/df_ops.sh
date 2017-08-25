@@ -52,6 +52,8 @@ DF_APP_NAME_PREFIX=df-data-service
 if [ -z ${DF_HOME+x} ]; then
 	echo "DF_HOME is unset, exit"
 	exit
+else
+	echo "DF_HOME is set, use DF_HOME=$DF_HOME ";
 fi
 if [ -z ${DF_APP_CONFIG+x} ]; then
 	echo "DF_APP_CONFIG is unset, use DF_APP_CONFIG=/mnt/etc ";
@@ -98,7 +100,7 @@ if [ -h /opt/confluent ]; then
 	schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 	sleep 3
 	echo "Started [Zookeeper|Kafka|Schema Registry]"
-	for jar in ${DF_LIB}/*.jar; do
+	for jar in ${DF_LIB}/*dependencies.jar; do
 	  CLASSPATH=${CLASSPATH}:${jar}
 	done
 	export CLASSPATH
