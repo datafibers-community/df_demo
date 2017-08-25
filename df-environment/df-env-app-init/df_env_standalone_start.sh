@@ -38,7 +38,7 @@ fi
 # Start Kafka Connect
 rm -rf /mnt/connect.offsets
 
-/opt/confluent/bin/connect-standalone $CURRENT_DIR/df_config/connect-standalone.properties $CURRENT_DIR/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
+/opt/confluent/bin/connect-standalone $DF_HOME/conf/connect-standalone.properties $DF_HOME/df_config/connect-dummy.properties 1>> /mnt/logs/kafkaconnect.log 2>> /mnt/logs/kafkaconnect.log &
 
 sleep 20
 

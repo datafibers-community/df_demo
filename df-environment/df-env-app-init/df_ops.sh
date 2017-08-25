@@ -46,32 +46,17 @@ action=${1}
 service=${2:-default}
 mode=${2:-d}
 
-DF_APP_NAME_PREFIX=df-data-service
-KAFKA_DAEMON_NAME=SupportedKafka
-KAFKA_CONNECT_DAEMON_NAME=connectdistributed
-ZOO_KEEPER_DAEMON_NAME=QuorumPeerMain
-SCHEMA_REGISTRY_DAEMON_NAME=schemaregistrymain
-FLINK_JM_DAEMON_NAME=JobManager
-FLINK_TM_DAEMON_NAME=TaskManager
-HADOOP_NN_DAEMON_NAME=NameNode
-HADOOP_DN_DAEMON_NAME=DataNode
-HIVE_SERVER_DAEMON_NAME=hiveserver2
-HIVE_METADATA_NAME=HiveMetaStore
-
 if [ -z ${DF_HOME+x} ]; then
 	echo "DF_HOME is unset, exit"
 	exit
 else
 	echo "DF_HOME is set, use DF_HOME=$DF_HOME ";
 fi
-if [ -z ${DF_APP_CONFIG+x} ]; then
-	echo "DF_APP_CONFIG is unset, use DF_APP_CONFIG=/mnt/etc ";
-	DF_APP_CONFIG=/mnt/etc
+if [ -z ${DF_APP_MNT+x} ]; then
+	echo "DF_APP_MNT is unset, use DF_APP_MNT=/mnt ";
+	DF_APP_MNT=/mnt
 fi
-if [ -z ${DF_APP_LOG+x} ]; then
-	echo "DF_APP_LOG is unset, use DF_APP_LOG=/mnt/logs ";
-	DF_APP_LOG=/mnt/logs
-fi
+	
 if [ -z ${DF_APP_DEP+x} ]; then
 	echo "DF_APP_DEP is unset, use DF_APP_DEP=/opt ";
 	DF_APP_DEP=/opt
@@ -85,23 +70,37 @@ if [ -z ${DF_LIB+x} ]; then
 	DF_LIB=$DF_HOME/lib
 fi
 
+DF_APP_CONFIG=${DF_APP_MNT}/etc
+DF_APP_LOG=${DF_APP_MNT}/logs
+DF_INSTALL_URL=http://www.datafibers.com/install
+DF_APP_NAME_PREFIX=df-data-service
+KAFKA_DAEMON_NAME=SupportedKafka
+KAFKA_CONNECT_DAEMON_NAME=connectdistributed
+ZOO_KEEPER_DAEMON_NAME=QuorumPeerMain
+SCHEMA_REGISTRY_DAEMON_NAME=schemaregistrymain
+FLINK_JM_DAEMON_NAME=JobManager
+FLINK_TM_DAEMON_NAME=TaskManager
+HADOOP_NN_DAEMON_NAME=NameNode
+HADOOP_DN_DAEMON_NAME=DataNode
+HIVE_SERVER_DAEMON_NAME=hiveserver2
+HIVE_METADATA_NAME=HiveMetaStore
 
 echo "********Starting DF Operations********"
 
 format_all () {
-rm -rf /mnt/kafka-logs/
-rm -rf /mnt/zookeeper/
-rm -rf /mnt/dfs/name/*
-rm -rf /mnt/dfs/data/*
-rm -rf /mnt/connect.offsets
-rm -rf /mnt/logs/*
+rm -rf ${DF_APP_MNT}/kafka-logs/
+rm -rf ${DF_APP_MNT}/zookeeper/
+rm -rf ${DF_APP_MNT}/dfs/name/*
+rm -rf ${DF_APP_MNT}/dfs/data/*
+rm -rf ${DF_APP_MNT}/connect.offsets
+rm -rf ${DF_APP_LOG}/*
 echo "Formatted all data & logs"
 hadoop namenode -format -force -nonInteractive > /dev/null 2>&1
 echo "Formatted hadoop"
 }
 
 start_confluent () {	
-if [ -h /opt/confluent ]; then
+if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${ZOO_KEEPER_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		zookeeper-server-start ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2>${DF_APP_LOG}/zk.log &
@@ -148,7 +147,7 @@ fi
 }
 
 stop_confluent () {
-if [ -h /opt/confluent ]; then
+if [ -h ${DF_APP_DEP}/confluent ]; then
 	schema-registry-stop ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
@@ -169,7 +168,7 @@ fi
 }
 
 start_flink () {
-if [ -h /opt/flink ]; then
+if [ -h ${DF_APP_DEP}/flink ]; then
 	sid=$(getSID ${FLINK_JM_DAEMON_NAME})
 	sid2=$(getSID ${FLINK_TM_DAEMON_NAME})
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
@@ -185,7 +184,7 @@ fi
 }
 
 stop_flink () {
-if [ -h /opt/flink ]; then
+if [ -h ${DF_APP_DEP}/flink ]; then
 	stop-cluster.sh 1 > /dev/null 2 > /dev/null
 	echo "Shut Down [Apache Flink]"
 	sleep 2
@@ -195,7 +194,7 @@ fi
 }
 
 start_hadoop () {
-if [ -h /opt/hadoop ]; then
+if [ -h ${DF_APP_DEP}/hadoop ]; then
 	sid=$(getSID ${HADOOP_NN_DAEMON_NAME})
 	sid2=$(getSID ${HADOOP_DN_DAEMON_NAME})
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
@@ -209,7 +208,7 @@ if [ -h /opt/hadoop ]; then
 else
 	echo "Apache Hadoop Not Found"
 fi
-if [ -h /opt/hive ]; then
+if [ -h ${DF_APP_DEP}/hive ]; then
 	hive --service metastore 1>> ${DF_APP_LOG}/metastore.log 2>> ${DF_APP_LOG}/metastore.log &
 	echo "Started [Apache Hive Metastore]"	
 	hive --service hiveserver2 1>> ${DF_APP_LOG}/hiveserver2.log 2>> ${DF_APP_LOG}/hiveserver2.log &
@@ -340,7 +339,7 @@ status_all () {
 
 install_df () {
 echo "Install DataFibers ..."
-curl -sL http://www.datafibers.com/install | bash -
+curl -sL ${DF_INSTALL_URL} | bash -
 }
 
 if [ "${action}" = "start" ] ; then
