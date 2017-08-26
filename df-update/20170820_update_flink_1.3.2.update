@@ -1,0 +1,5 @@
+update_desc="This update contains following changes\n1.Upgrade flink to v1.3.2.\n2.Flink now fix its critical rest api bugs.\n3.Flink SQL now refactor its table api and other libs."
+install_soft_link=flink
+install_folder=flink-1.3.2
+dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop26-scala_2.11.tgz
+post_run_script=20170820_update_post_script.sh
