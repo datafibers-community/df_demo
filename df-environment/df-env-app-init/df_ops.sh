@@ -357,6 +357,12 @@ status_all () {
 install_df () {
 echo "Install DataFibers ..."
 curl -sL ${DF_INSTALL_URL} | bash -
+if [ ! -z "${service}" ]; then
+    echo "Install DataFibers from branch ${service}"
+    cd ${DF_REP}/df_data_service
+    git checkout ${service}
+    mvn package -DskipTests > /dev/null 2>&1
+fi
 }
 
 update_df () {
