@@ -353,7 +353,7 @@ update_df () {
 if [ ! -d /tmp/vagrant-downloads ]; then
     mkdir -p /tmp/vagrant-downloads
 fi
-chmod a+rw /tmp/vagrant-downloads
+sudo chmod a+rw /tmp/vagrant-downloads
 
 # Check or Create update history file
 if [ ! -e $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME ]; then
