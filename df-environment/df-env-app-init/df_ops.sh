@@ -141,7 +141,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
-		sleep 8
+		sleep 10
 	else
 		echo "Found Kafka Connect daemon running. Please [stop] or [restart]."
 	fi
@@ -180,7 +180,7 @@ if [ -h ${DF_APP_DEP}/flink ]; then
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
 		start-cluster.sh 1 > /dev/null 2 > /dev/null
 		echo "Started [Apache Flink]"
-		sleep 3
+		sleep 5
 	else
 		echo "Found Flink daemon running. Please [stop] or [restart]."
 	fi
@@ -193,7 +193,7 @@ stop_flink () {
 if [ -h ${DF_APP_DEP}/flink ]; then
 	stop-cluster.sh 1 > /dev/null 2 > /dev/null
 	echo "Shut Down [Apache Flink]"
-	sleep 2
+	sleep 3
 else
 	echo "Apache Flink Not Found"
 fi
