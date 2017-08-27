@@ -141,7 +141,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
-		sleep 2
+		sleep 8
 	else
 		echo "Found Kafka Connect daemon running. Please [stop] or [restart]."
 	fi
