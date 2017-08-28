@@ -107,7 +107,7 @@ HADOOP_DN_DAEMON_NAME=DataNode
 HIVE_SERVER_DAEMON_NAME=hiveserver2
 HIVE_METADATA_NAME=HiveMetaStore
 
-echo "********Starting DF Operations********"
+echo "****************Starting DF Operations****************"
 
 format_all () {
 rm -rf ${DF_APP_MNT}/kafka-logs/
@@ -128,26 +128,27 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 		zookeeper-server-start ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2>${DF_APP_LOG}/zk.log &
 		sleep 3
 	else
-		echo "Found ZooKeeper daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found ZooKeeper daemon running. Please [stop] or [restart] it."
 	fi	
-
+	echo "[INFO] Started [Zookeeper]"
+	
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		kafka-server-start ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 		sleep 3
 	else
-		echo "Found Kafka daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found Kafka daemon running. Please [stop] or [restart] it."
 	fi	
-
+	echo "[INFO] Started [Kafka Server]"
+	
 	sid=$(getSID ${SCHEMA_REGISTRY_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 		sleep 3
 	else
-		echo "Found Schema Registry daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found Schema Registry daemon running. Please [stop] or [restart] it."
 	fi
-	
-	echo "Started [Zookeeper|Kafka|Schema Registry]"
+	echo "[INFO] Started [Schema Registry]"
 
 	for jar in ${DF_LIB}/*dependencies.jar; do
 	  CLASSPATH=${CLASSPATH}:${jar}
@@ -159,33 +160,36 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 		connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
 		sleep 3
 	else
-		echo "Found Kafka Connect daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found Kafka Connect daemon running. Please [stop] or [restart] it."
 	fi
 
-	echo "Started [Kafka Connect]"
+	echo "[INFO] Started [Kafka Connect]"
 else
-	echo "Confluent Platform Not Found"
+	echo "[WARN] Confluent Platform Not Found"
 fi
 }
 
 stop_confluent () {
 if [ -h ${DF_APP_DEP}/confluent ]; then
+	echo "[INFO] Shutdown [Schema Registry]"
 	schema-registry-stop ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
+	echo "[INFO] Shutdown [Kafka Server]"
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
-	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
-	echo "Shutdown [Zookeeper|Kafka|Schema Registry]"
-
+	sleep 15
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ ! -z "${sid}" ]; then
     	kill -9 ${sid}
-    fi
+		echo "[WARN] Kafka PID is killed after 15 sec. time out."
+    fi	
+	echo "[INFO] Shutdown [Zookeeper]"	
+	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
+	echo "[INFO] Shutdown [Kafka Connect]"
     sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
 	if [ ! -z "${sid}" ]; then
     	kill -9 ${sid}
     fi
-	echo "Shutdown [Kafka Connect]"
 else
-	echo "Confluent Kafka Not Found"
+	echo "[WARN] Confluent Not Found"
 fi
 }
 
@@ -195,23 +199,23 @@ if [ -h ${DF_APP_DEP}/flink ]; then
 	sid2=$(getSID ${FLINK_TM_DAEMON_NAME})
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
 		start-cluster.sh 1 > /dev/null 2 > /dev/null
-		echo "Started [Apache Flink]"
+		echo "[INFO] Started [Apache Flink]"
 		sleep 5
 	else
-		echo "Found Flink daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found Flink daemon running. Please [stop] or [restart]."
 	fi
 else
-	echo "Apache Flink Not Found"
+	echo "[WARN] Apache Flink Not Found"
 fi
 }
 
 stop_flink () {
 if [ -h ${DF_APP_DEP}/flink ]; then
 	stop-cluster.sh 1 > /dev/null 2 > /dev/null
-	echo "Shutdown [Apache Flink]"
+	echo "[INFO] Shutdown [Apache Flink]"
 	sleep 3
 else
-	echo "Apache Flink Not Found"
+	echo "[WARN] Apache Flink Not Found"
 fi
 }
 
@@ -222,36 +226,36 @@ if [ -h ${DF_APP_DEP}/hadoop ]; then
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
 		hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
 		hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
-		echo "Started [Hadoop]"
+		echo "[INFO] Started [Hadoop]"
 		sleep 3
 	else
-		echo "Found Hadoop daemon running. Please [stop] or [restart]."
+		echo "[WARN] Found Hadoop daemon running. Please [stop] or [restart] it."
 	fi	
 else
-	echo "Apache Hadoop Not Found"
+	echo "[WARN] Apache Hadoop Not Found"
 fi
 if [ -h ${DF_APP_DEP}/hive ]; then
 	hive --service metastore 1>> ${DF_APP_LOG}/metastore.log 2>> ${DF_APP_LOG}/metastore.log &
-	echo "Started [Apache Hive Metastore]"	
+	echo "[INFO] Started [Apache Hive Metastore]"	
 	hive --service hiveserver2 1>> ${DF_APP_LOG}/hiveserver2.log 2>> ${DF_APP_LOG}/hiveserver2.log &
-	echo "Started [Apache Hive Server2]"	
+	echo "[INFO] Started [Apache Hive Server2]"	
 	sleep 3
 else
-	echo "Apache Hive Not Found"
+	echo "[WARN] Apache Hive Not Found"
 fi
 }
 
 stop_hadoop () {
-echo "Shutting down Hadoop"
+echo "[INFO] Shutdown Hadoop"
 hadoop-daemon.sh stop datanode
 hadoop-daemon.sh stop namenode
 sid=$(getSID hivemetastore)
 kill -9 ${sid} 2> /dev/null
-echo "Shutdown [Apache Hive MetaStore]"
+echo "[INFO] Shutdown [Apache Hive MetaStore]"
 sleep 2
 sid=$(getSID hiveserver2)
 kill -9 ${sid} 2> /dev/null
-echo "Shutdown [Apache Hive Server2]"
+echo "[INFO] Shutdown [Apache Hive Server2]"
 }
 
 start_df() {
@@ -262,28 +266,28 @@ if [ -z "${sid}" ]; then
 		if [ "$connectStatusCode" = "200" ]; then
 			if [[ "${mode}" =~ (^| )d($| ) ]]; then	
 				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-				echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
+				echo "[INFO] Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
 			else
 				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-				echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
+				echo "[INFO] Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
 			fi
 			break
 		fi
 		echo "[INFO] Waiting for Kafka Connect Service ..."	
-		sleep 5
+		sleep 10
 	done
 else
-	echo "Found DF daemon running. Please [stop] or [restart]."
+	echo "[WARN] Found DF daemon running. Please [stop] or [restart] it."
 fi		
 }
 
 stop_df() {
 sid=$(getSID $DF_APP_NAME_PREFIX)
 if [ -z "${sid}" ]; then
-	echo "Running DF Data Service Not Found."
+	echo "[WARN] Running DF Data Service Not Found."
 else
 	kill -9 ${sid}
-	echo "Shutdown [DF Data Service] at [$sid]"
+	echo "[INFO] Shutdown [DF Data Service]"
 fi
 }
 
@@ -304,7 +308,7 @@ local service_name=$1
 local service_name_show=$2
 sid=$(getSID $service_name)
 if [ ! -z "${sid}" ]; then
-	echo "Found Running service [$service_name_show] at [${sid}]"
+	printf "%-6s %-20s %-50s\n" "[INFO]" "[$service_name_show]" "is running at [${sid}]"
 fi
 }
 
@@ -324,7 +328,7 @@ elif [ "${service}" = "default" ]; then
 elif [ "${service}" = "jar" ]; then	
 	start_df	
 else
-	echo "No service will start because of wrong command."
+	echo "[ERROR] No service will start because of wrong command."
 fi	
 }
 
@@ -344,7 +348,7 @@ elif [ "${service}" = "default" ]; then
 elif [ "${service}" = "jar" ]; then	
 	stop_df
 else
-	echo "No service will stop because of wrong command."
+	echo "[ERROR] No service will stop because of wrong command."
 fi	
 }
 
@@ -409,9 +413,9 @@ for update_file in *.update; do
 			source $DF_REP/df_demo/df-update/$update_file
 			soft_install true $install_soft_link $install_folder $dl_link $post_run_script
 			#Log in to history
-			echo "appled $update_file" >> $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME
+			echo "[INFO] applied $update_file" >> $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME
 		else
-			echo "The update [$update_file] is ignored."
+			echo "[INFO] The update [$update_file] is ignored."
 		fi
 	fi
 done
@@ -426,13 +430,6 @@ soft_install () {
 
 	if [ "$install_flag" = true ]; then
 		file_name=`basename $dl_link`
-
-		echo "[INFO] install_flag=$install_flag"
-		echo "[INFO] dl_link=$dl_link"
-		echo "[INFO] file_name=$file_name"
-		echo "[INFO] install_folder=$install_folder"
-		echo "[INFO] install_soft_link=$install_soft_link"
-
         if [ ! -e /opt/$install_folder ]; then
             cd /tmp/vagrant-downloads
             if [ ! -e $file_name ]; then
@@ -441,14 +438,14 @@ soft_install () {
 			mkdir -p /opt/$install_folder && tar xf /tmp/vagrant-downloads/$file_name -C /opt/$install_folder
             ln -sfn /opt/$install_folder /opt/$install_soft_link
 		else
-			echo "Found $install_folder, ignore installation. "
+			echo "[INFO] Found $install_folder, ignore installation. "
         fi
-		echo "Installed ${file_name}"
+		echo "[INFO] Installed ${file_name}"
     fi
 	
 	# Copy over conf files as well
 	if [ ! -z "$post_run_script" ]; then
-		echo "Running post update script $post_run_script"
+		echo "[INFO] Running post update script $post_run_script"
 		chmod +x $DF_REP/df_demo/df-update/$post_run_script
 		cd $DF_HOME
 		./repo/df_demo/df-update/$post_run_script
@@ -474,6 +471,6 @@ elif [ "${action}" = "help" ]; then
 elif [ "${action}" = "update" ]; then
 	update_df
 else
-    echo "Wrong command entered."
+    echo "[ERROR] Wrong command entered."
     usage
 fi
