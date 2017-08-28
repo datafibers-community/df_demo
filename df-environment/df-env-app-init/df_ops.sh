@@ -270,7 +270,7 @@ if [ -z "${sid}" ]; then
 			break
 		fi
 		echo "[INFO] Waiting for Kafka Connect Service ..."	
-		sleep 2
+		sleep 5
 	done
 else
 	echo "Found DF daemon running. Please [stop] or [restart]."
