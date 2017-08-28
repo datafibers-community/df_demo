@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e #comment this since the curl returns none-zero when service is not avaliable
 
 #######################################################################################################
 # Description : This script is used for df service operations, such as start, stop, and query status
@@ -13,7 +13,7 @@ usage () {
         printf "Parameters:\n"
         printf "[service operation]\n"
         printf "%-25s: %-50s\n" "start|stop|restart" "Perform start|stop|restart on df environment and service"
-    printf "\n"
+    printf "\n" 
         printf "[service]\n"
         printf "%-25s: %-50s\n" "default" "Run kafka, flink, and df. This is the default option."
         printf "%-25s: %-50s\n" "min" "Run kafka and df"
@@ -56,36 +56,41 @@ fi
 
 action=${1}
 service=${2:-default}
-mode=${2:-d}
+mode=${3:-d}
 
 if [ -z ${DF_HOME+x} ]; then
-	echo "DF_HOME is unset, exit"
+    printf "%-15s: %-50s\n" "\$DF_HOME" "unset, exit."	
 	exit
 else
-	echo "DF_HOME is set, use DF_HOME=$DF_HOME ";
+    printf "%-15s: %-50s\n" "\$DF_HOME" "Found \$DF_HOME=$DF_HOME"	
 fi
 if [ -z ${DF_APP_MNT+x} ]; then
-	echo "DF_APP_MNT is unset, use DF_APP_MNT=/mnt ";
+    printf "%-15s: %-50s\n" "\$DF_APP_MNT" "Not Found. Use \$DF_APP_MNT=/mnt"	
 	DF_APP_MNT=/mnt
 fi
 	
 if [ -z ${DF_APP_DEP+x} ]; then
-	echo "DF_APP_DEP is unset, use DF_APP_DEP=/opt ";
+	printf "%-15s: %-50s\n" "\$DF_APP_DEP" "Not Found. Use \$DF_APP_DEP=/opt";
 	DF_APP_DEP=/opt
 fi
 if [ -z ${DF_CONFIG+x} ]; then
-	echo "DF_CONFIG is unset, use DF_CONFIG=$DF_HOME/conf ";
+	printf "%-15s: %-50s\n" "\$DF_CONFIG" "Not Found. Use \$DF_CONFIG=$DF_HOME/conf";
 	DF_CONFIG=$DF_HOME/conf
 fi
 if [ -z ${DF_LIB+x} ]; then
-	echo "DF_LIB is unset, use DF_LIB=$DF_HOME/lib ";
+	printf "%-15s: %-50s\n" "\$DF_LIB" "Not Found. Use \$DF_LIB=$DF_HOME/lib";
 	DF_LIB=$DF_HOME/lib
 fi
 if [ -z ${DF_REP+x} ]; then
-	echo "DF_REP is unset, use DF_REP=$DF_HOME/repo ";
+	printf "%-15s: %-50s\n" "\$DF_REP" "Not Found. Use \$DF_REP=$DF_HOME/repo";
 	DF_REP=$DF_HOME/repo
 fi
+DF_KAFKA_CONNECT_REST_PORT=$(grep rest.port $DF_CONFIG/connect-avro-distributed.properties | sed "s/rest.port=//g")
+if [ -z ${DF_KAFKA_CONNECT_REST_PORT} ]; then
+	DF_KAFKA_CONNECT_REST_PORT=8083;
+fi
 
+DF_KAFKA_CONNECT_URI="localhost:"$DF_KAFKA_CONNECT_REST_PORT
 DF_UPDATE_HIST_FILE_NAME=.df_update_history
 DF_APP_CONFIG=${DF_APP_MNT}/etc
 DF_APP_LOG=${DF_APP_MNT}/logs
@@ -152,7 +157,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		connect-distributed ${DF_CONFIG}/connect-avro-distributed.properties 1> ${DF_APP_LOG}/distributedkafkaconnect.log 2> ${DF_APP_LOG}/distributedkafkaconnect.log &
-		sleep 10
+		sleep 3
 	else
 		echo "Found Kafka Connect daemon running. Please [stop] or [restart]."
 	fi
@@ -168,7 +173,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	schema-registry-stop ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
-	echo "Shut Down [Zookeeper|Kafka|Schema Registry]"
+	echo "Shutdown [Zookeeper|Kafka|Schema Registry]"
 
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ ! -z "${sid}" ]; then
@@ -178,7 +183,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	if [ ! -z "${sid}" ]; then
     	kill -9 ${sid}
     fi
-	echo "Shut Down [Kafka Connect]"
+	echo "Shutdown [Kafka Connect]"
 else
 	echo "Confluent Kafka Not Found"
 fi
@@ -203,7 +208,7 @@ fi
 stop_flink () {
 if [ -h ${DF_APP_DEP}/flink ]; then
 	stop-cluster.sh 1 > /dev/null 2 > /dev/null
-	echo "Shut Down [Apache Flink]"
+	echo "Shutdown [Apache Flink]"
 	sleep 3
 else
 	echo "Apache Flink Not Found"
@@ -218,7 +223,7 @@ if [ -h ${DF_APP_DEP}/hadoop ]; then
 		hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
 		hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
 		echo "Started [Hadoop]"
-		sleep 5
+		sleep 3
 	else
 		echo "Found Hadoop daemon running. Please [stop] or [restart]."
 	fi	
@@ -230,7 +235,7 @@ if [ -h ${DF_APP_DEP}/hive ]; then
 	echo "Started [Apache Hive Metastore]"	
 	hive --service hiveserver2 1>> ${DF_APP_LOG}/hiveserver2.log 2>> ${DF_APP_LOG}/hiveserver2.log &
 	echo "Started [Apache Hive Server2]"	
-	sleep 5
+	sleep 3
 else
 	echo "Apache Hive Not Found"
 fi
@@ -242,23 +247,31 @@ hadoop-daemon.sh stop datanode
 hadoop-daemon.sh stop namenode
 sid=$(getSID hivemetastore)
 kill -9 ${sid} 2> /dev/null
-echo "Shut Down [Apache Hive MetaStore]"
+echo "Shutdown [Apache Hive MetaStore]"
 sleep 2
 sid=$(getSID hiveserver2)
 kill -9 ${sid} 2> /dev/null
-echo "Shut Down [Apache Hive Server2]"
+echo "Shutdown [Apache Hive Server2]"
 }
 
 start_df() {
 sid=$(getSID ${DF_APP_NAME_PREFIX})
 if [ -z "${sid}" ]; then	
-	if [[ "${mode}" =~ (^| )d($| ) ]]; then	
-		java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-		echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
-	else
-		java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
-		echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
-	fi
+	while true; do
+		connectStatusCode=$(curl --noproxy '*' -s -o /dev/null -w "%{http_code}" $DF_KAFKA_CONNECT_URI 2> /dev/null)
+		if [ "$connectStatusCode" = "200" ]; then
+			if [[ "${mode}" =~ (^| )d($| ) ]]; then	
+				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+				echo "Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
+			else
+				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
+				echo "Started [DF Data Service]. To see log using tail -f ${DF_APP_LOG}/df.log"
+			fi
+			break
+		fi
+		echo "[INFO] Waiting for Kafka Connect Service ..."	
+		sleep 2
+	done
 else
 	echo "Found DF daemon running. Please [stop] or [restart]."
 fi		
@@ -270,7 +283,7 @@ if [ -z "${sid}" ]; then
 	echo "Running DF Data Service Not Found."
 else
 	kill -9 ${sid}
-	echo "Shut Down [DF Data Service] at [$sid]"
+	echo "Shutdown [DF Data Service] at [$sid]"
 fi
 }
 
