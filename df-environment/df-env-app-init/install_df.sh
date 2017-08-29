@@ -85,14 +85,8 @@ DF_GIT_DF_DEMO=df_demo
 DF_GIT_DF_SERVICE=df_data_service
 DF_GIT_DF_CONNECT=df_certified_connects
 
-echo "[INFO] Starting installation DF packages at $CURRENT_DIR."
-echo "[INFO] Step[1/5] - Creating DF Folders"
-printf "%-15s: %-50s\n" "[INFO] $DF_CONFIG/" "where to find configuration files"
-printf "%-15s: %-50s\n" "[INFO] $DF_LIB/" "where to find certified df connect and service jars"
-printf "%-15s: %-50s\n" "[INFO] $DF_DATA/" "where to find sample or test data"
-printf "%-15s: %-50s\n" "[INFO] $DF_GIT/" "where to find source code"
-printf "%-15s: %-50s\n" "[INFO] $DF_BIN/" "where to find scripts for run and admin"
-echo ""
+echo "[INFO] Start DataFibers installation at $CURRENT_DIR."
+echo "[INFO] Step[1/5] - Creating Folders"
 
 if [ ! -d $DF_CONFIG ]; then
     mkdir -p $DF_CONFIG
@@ -110,7 +104,7 @@ if [ ! -d $DF_BIN ]; then
     mkdir -p $DF_BIN
 fi
 
-echo "[INFO] Step[2/5] - Downloading DF Source"
+echo "[INFO] Step[2/5] - Downloading Source"
 cd $DF_GIT
 rm -rf $DF_GIT_DF_DEMO 
 rm -rf $DF_GIT_DF_SERVICE 
@@ -119,9 +113,9 @@ rm -rf $DF_GIT_DF_CONNECT
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git &&
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 20
 
-echo "[INFO] Step[3/5] - Installing DF Service"
+echo "[INFO] Step[3/5] - Installing Core Service"
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
-echo "[INFO] Step[4/5] - Installing DF Connectors"
+echo "[INFO] Step[4/5] - Installing Certified Connectors"
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
 
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/$DF_CONFIG
@@ -129,7 +123,7 @@ cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/target/*fat.jar $CURRENT_DIR/$DF_LIB
 
-echo "[INFO] Step[5/5] - Applying DF Patches and Settings"
+echo "[INFO] Step[5/5] - Applying Patches and Settings"
 # Map Flink Web Console port to 8001
 rm -f /opt/flink/conf/flink-conf.yaml.bk
 cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
@@ -145,5 +139,5 @@ echo "export DF_HOME=\"$CURRENT_DIR\"" >> $DF_USER_HOME/.profile
 echo "PATH=\"\$DF_HOME/bin:\$PATH\"" >> $DF_USER_HOME/.profile
 source $DF_USER_HOME/.profile
 
-echo "[INFO] DataFibers Packages Installation Succeed! :)" 
+echo "[INFO] Complete DataFibers Installation! :)" 
 
