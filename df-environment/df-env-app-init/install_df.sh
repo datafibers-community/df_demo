@@ -117,7 +117,7 @@ rm -rf $DF_GIT_DF_SERVICE
 rm -rf $DF_GIT_DF_CONNECT 
 (git clone -q https://github.com/datafibers-community/$DF_GIT_DF_DEMO.git &&
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git &&
-git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 10
+git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 20
 
 echo "[INFO] Step[3/5] - Installing DF Service"
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
