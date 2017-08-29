@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 #check if bc command is avaliable. It uses by progress bar
-if ! bc_loc="$(type -p "bc" || [ -z "$bc_loc" ]; then
+if ! bc_loc="$(type -p "bc")" || [ -z "$bc_loc" ]; then
   sudo apt-get install -qq bc > /dev/null
 fi
 
