@@ -7,6 +7,7 @@ fi
 
 progress_bar()
 {
+  local PID=$!
   local DURATION=$1
   local INT=0.25      # refresh interval
   local TIME=0
@@ -14,6 +15,7 @@ progress_bar()
   local SECS=0
   local FRACTION=0
   local FB=2588       # full block
+  local COLS=75       # full bar length
 
   trap "echo -e $(tput cnorm); trap - SIGINT; return" SIGINT
 
@@ -22,8 +24,7 @@ progress_bar()
   local START=$( date +%s%N )
 
   while [ $SECS -lt $DURATION ]; do
-    local COLS=$( tput cols )
-
+    # local COLS=$( tput cols )
     # main bar
     local L=$( bc -l <<< "( ( $COLS - 5 ) * $TIME  ) / ($DURATION-$INT)" | awk '{ printf "%f", $0 }' )
     local N=$( bc -l <<< $L                                              | awk '{ printf "%d", $0 }' )
@@ -61,6 +62,12 @@ progress_bar()
                    | awk '{ if ( $0 > 0 ) printf "%f", $0; else print "0" }' )
     sleep $DELTA
     START=$( date +%s%N )
+    # when 95% check if the PID is still running
+    if [ $PROGRESS -ge 98 ]; then
+        while kill -0 $PID 2> /dev/null; do
+           sleep 1
+        done
+    fi
   done
 
   echo $(tput cnorm)
@@ -109,7 +116,7 @@ rm -rf $DF_GIT_DF_SERVICE
 rm -rf $DF_GIT_DF_CONNECT 
 (git clone -q https://github.com/datafibers-community/$DF_GIT_DF_DEMO.git &&
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git &&
-git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 20
+git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 10
 
 echo "[INFO] Step[3/5]-Installing DF Service"
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
