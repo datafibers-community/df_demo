@@ -400,13 +400,14 @@ fi
 cd $DF_REP/df_demo
 git pull -q
 cd $DF_REP/df_demo/df-update
-for update_file in *.update; do 
+for update_file in *.update; do
+    cd $DF_REP/df_demo/df-update
 	if grep -q $update_file $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME 2> /dev/null; then
-		echo "[Ign] update [$update_file]."
+		echo "[IGN] Update [$update_file]."
 	else
-		echo "[New] update [$update_file]."
+		echo "[NEW] Update [$update_file]."
 		echo "==================================================="
-		echo "Update Description:"
+		echo "[INFO] Update Description:"
 		echo -e $(grep "update_desc" $update_file | sed "s/update_desc=//g;s/\"//g")
 		echo "==================================================="
 
