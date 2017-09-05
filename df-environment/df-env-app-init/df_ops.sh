@@ -61,30 +61,30 @@ service=${2:-default}
 mode=${3:-d}
 
 if [ -z ${DF_HOME+x} ]; then
-    printf "%-15s: %-50s\n" "\$DF_HOME" "unset, exit."	
+    printf "%-15s: %-50s\n" "[INFO] \$DF_HOME" "unset, exit."
 	exit
 else
-    printf "%-15s: %-50s\n" "\$DF_HOME" "Found \$DF_HOME=$DF_HOME"	
+    printf "%-15s: %-50s\n" "[INFO] \$DF_HOME" "Found \$DF_HOME=$DF_HOME"
 fi
 if [ -z ${DF_APP_MNT+x} ]; then
-    printf "%-15s: %-50s\n" "\$DF_APP_MNT" "Not Found. Use \$DF_APP_MNT=/mnt"	
+    printf "%-15s: %-50s\n" "[INFO] \$DF_APP_MNT" "Not Found. Use \$DF_APP_MNT=/mnt"
 	DF_APP_MNT=/mnt
 fi
 	
 if [ -z ${DF_APP_DEP+x} ]; then
-	printf "%-15s: %-50s\n" "\$DF_APP_DEP" "Not Found. Use \$DF_APP_DEP=/opt";
+	printf "%-15s: %-50s\n" "[INFO] \$DF_APP_DEP" "Not Found. Use \$DF_APP_DEP=/opt";
 	DF_APP_DEP=/opt
 fi
 if [ -z ${DF_CONFIG+x} ]; then
-	printf "%-15s: %-50s\n" "\$DF_CONFIG" "Not Found. Use \$DF_CONFIG=$DF_HOME/conf";
+	printf "%-15s: %-50s\n" "[INFO] \$DF_CONFIG" "Not Found. Use \$DF_CONFIG=$DF_HOME/conf";
 	DF_CONFIG=$DF_HOME/conf
 fi
 if [ -z ${DF_LIB+x} ]; then
-	printf "%-15s: %-50s\n" "\$DF_LIB" "Not Found. Use \$DF_LIB=$DF_HOME/lib";
+	printf "%-15s: %-50s\n" "[INFO] \$DF_LIB" "Not Found. Use \$DF_LIB=$DF_HOME/lib";
 	DF_LIB=$DF_HOME/lib
 fi
 if [ -z ${DF_REP+x} ]; then
-	printf "%-15s: %-50s\n" "\$DF_REP" "Not Found. Use \$DF_REP=$DF_HOME/repo";
+	printf "%-15s: %-50s\n" "[INFO] \$DF_REP" "Not Found. Use \$DF_REP=$DF_HOME/repo";
 	DF_REP=$DF_HOME/repo
 fi
 DF_KAFKA_CONNECT_REST_PORT=$(grep rest.port $DF_CONFIG/connect-avro-distributed.properties | sed "s/rest.port=//g")

@@ -2,10 +2,10 @@
 set -e
 
 if [ -z ${DF_HOME+x} ]; then
-	echo "DF_HOME is unset, exit"
+	echo "[INFO] \$DF_HOME is unset, exit"
 	exit
 else
-	echo "DF_HOME Not Found, use DF_HOME=$DF_HOME ";
+	echo "[INFO] \$DF_HOME Not Found, use DF_HOME=$DF_HOME ";
 fi
 if [ -z ${DF_APP_MNT+x} ]; then
 	DF_APP_MNT=/mnt
