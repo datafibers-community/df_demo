@@ -21,24 +21,26 @@ usage () {
         printf "%-25s: %-50s\n" "jar" "Run df jar only"
     printf "\n"
         printf "[service option]\n"
-        printf "%-25s: %-50s\n" "d" "Run in debug mode"
+        printf "%-25s: %-50s\n" "debug" "Run in debug mode. This is a default option."
     printf "\n"
     printf "[admin operation]\n"
         printf "%-25s: %-50s\n" "status" "Check status of data service and environment"
         printf "%-25s: %-50s\n" "format" "Format all data and logs"
         printf "%-25s: %-50s\n" "help" "Show this help"
         printf "%-25s: %-50s\n" "admin" "Perform data service admin operations and must use with [admin option]"
-        printf "%-25s: %-50s\n" "install" "Reinstall df packages and can use with [admin option]"
+        printf "%-25s: %-50s\n" "install" "Reinstall df packages, which can also use with [admin option]"
+        printf "%-25s: %-50s\n" "update" "Update df packages, which can also use with [admin option]"
     printf "\n"
         printf "[admin option]\n"
         printf "%-25s: %-50s\n" "idi" "Reset df_installed collection. Only applicable to admin"
         printf "%-25s: %-50s\n" "branch_name" "Install df from specific branch name. Only applicable to install"
+        printf "%-25s: %-50s\n" "yes" "Update df with yes prompt for all package. Only applicable to update"
     printf "\n"
         printf "Examples:\n"
         printf "%-25s: %-50s\n" "df_ops start" "Run df default environment and data service"
-        printf "%-25s: %-50s\n" "df_ops start -d" "Run df default environment and data service in debug mode"
-        printf "%-25s: %-50s\n" "df_ops start max -d" "Run df max environment and data service in debug mode"
-        printf "%-25s: %-50s\n" "df_ops restart jar -d" "Restart df jar file in debug mode"
+        printf "%-25s: %-50s\n" "df_ops start debug" "Run df default environment and data service in debug mode"
+        printf "%-25s: %-50s\n" "df_ops start max debug" "Run df max environment and data service in debug mode"
+        printf "%-25s: %-50s\n" "df_ops restart jar debug" "Restart df jar file in debug mode"
         printf "%-25s: %-50s\n" "df_ops stop" "Stop df and all services"
         printf "%-25s: %-50s\n" "df_ops status" "Check running status for all df and its related services"
         printf "%-25s: %-50s\n" "df_ops format" "Format environment data and logs"
@@ -407,7 +409,13 @@ for update_file in *.update; do
 		echo "Update Description:"
 		echo -e $(grep "update_desc" $update_file | sed "s/update_desc=//g;s/\"//g")
 		echo "==================================================="
-		read -p "Do you want to apply the update? y/n?" q1
+
+		if [ "${service}" == "yes" ]; then
+		    q1=y
+		else
+		    read -p "Do you want to apply the update? y/n?" q1
+		fi
+
 		if [ "$q1" = "y" ]; then
 			# Apply the update
 			source $DF_REP/df_demo/df-update/$update_file
