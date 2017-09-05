@@ -406,10 +406,10 @@ for update_file in *.update; do
 		echo "[IGN] Update [$update_file]."
 	else
 		echo "[NEW] Update [$update_file]."
-		echo "==================================================="
+		echo "======================================================"
 		echo "[INFO] Update Description:"
 		echo -e $(grep "update_desc" $update_file | sed "s/update_desc=//g;s/\"//g")
-		echo "==================================================="
+		echo "======================================================"
 
 		if [ "${service}" == "yes" ]; then
 		    q1=y
