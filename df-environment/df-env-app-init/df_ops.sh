@@ -401,7 +401,7 @@ cd $DF_REP/df_demo
 git pull -q
 cd $DF_REP/df_demo/df-update
 for update_file in *.update; do 
-	if grep -q $update_file $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME; then
+	if grep -q $update_file $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME 2> /dev/null; then
 		echo "[Ign] update [$update_file]."
 	else
 		echo "[New] update [$update_file]."
