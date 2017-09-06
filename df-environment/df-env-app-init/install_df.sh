@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
-#check if bc command is avaliable. It uses by progress bar
+#check if bc command is available. It uses by progress bar
 if ! bc_loc="$(type -p "bc")" || [ -z "$bc_loc" ]; then
   sudo apt-get install -qq bc > /dev/null
 fi
+
+branch=${1:-default}
 
 progress_bar()
 {
@@ -113,8 +115,14 @@ rm -rf $DF_GIT_DF_CONNECT
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git &&
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 20
 
-echo "[INFO] Step[3/5] - Installing Core Service"
-(cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
+if [ "${branch}" != "default" ] ; then
+    echo "[INFO] Step[3/5] - Installing Core Service"
+    (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
+else
+    echo "[INFO] Step[3/5] - Installing Core Service From Branch ${branch}"
+    (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && git checkout ${branch} && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
+fi
+
 echo "[INFO] Step[4/5] - Installing Certified Connectors"
 (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
 

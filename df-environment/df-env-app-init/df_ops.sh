@@ -96,7 +96,6 @@ DF_KAFKA_CONNECT_URI="localhost:"$DF_KAFKA_CONNECT_REST_PORT
 DF_UPDATE_HIST_FILE_NAME=.df_update_history
 DF_APP_CONFIG=${DF_APP_MNT}/etc
 DF_APP_LOG=${DF_APP_MNT}/logs
-DF_INSTALL_URL=http://www.datafibers.com/install
 DF_APP_NAME_PREFIX=df-data-service
 KAFKA_DAEMON_NAME=SupportedKafka
 KAFKA_CONNECT_DAEMON_NAME=connectdistributed
@@ -374,14 +373,9 @@ status_all () {
 }
 
 install_df () {
-echo "Install DataFibers ..."
-curl -sL ${DF_INSTALL_URL} | bash -
-if [ "${service}" != "default" ]; then
-    echo "Install DataFibers from branch ${service}"
-    cd ${DF_REP}/df_data_service
-    git checkout ${service}
-    mvn package -DskipTests > /dev/null 2>&1
-fi
+echo "[INFO] Install DataFibers ..."
+cd ${DF_HOME}/bin
+./install_df.sh ${service}
 }
 
 update_df () {
