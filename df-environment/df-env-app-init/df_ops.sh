@@ -13,7 +13,7 @@ usage () {
         printf "Parameters:\n"
         printf "[service operation]\n"
         printf "%-25s: %-50s\n" "start|stop|restart" "Perform start|stop|restart on df environment and service"
-    printf "\n" 
+    printf "\n"
         printf "[service]\n"
         printf "%-25s: %-50s\n" "default" "Run kafka, flink, and df. This is the default option."
         printf "%-25s: %-50s\n" "min" "Run kafka and df"
@@ -70,7 +70,7 @@ if [ -z ${DF_APP_MNT+x} ]; then
     printf "%-15s: %-50s\n" "[INFO] \$DF_APP_MNT" "Not Found. Use \$DF_APP_MNT=/mnt"
 	DF_APP_MNT=/mnt
 fi
-	
+
 if [ -z ${DF_APP_DEP+x} ]; then
 	printf "%-15s: %-50s\n" "[INFO] \$DF_APP_DEP" "Not Found. Use \$DF_APP_DEP=/opt";
 	DF_APP_DEP=/opt
@@ -122,7 +122,7 @@ hadoop namenode -format -force -nonInteractive > /dev/null 2>&1
 echo "Formatted hadoop"
 }
 
-start_confluent () {	
+start_confluent () {
 if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${ZOO_KEEPER_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
@@ -130,18 +130,18 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 		sleep 3
 	else
 		echo "[WARN] Found ZooKeeper daemon running. Please [stop] or [restart] it."
-	fi	
+	fi
 	echo "[INFO] Started [Zookeeper]"
-	
+
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		kafka-server-start ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 		sleep 3
 	else
 		echo "[WARN] Found Kafka daemon running. Please [stop] or [restart] it."
-	fi	
+	fi
 	echo "[INFO] Started [Kafka Server]"
-	
+
 	sid=$(getSID ${SCHEMA_REGISTRY_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
@@ -181,8 +181,8 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	if [ ! -z "${sid}" ]; then
     	kill -9 ${sid}
 		echo "[WARN] Kafka PID is killed after 15 sec. time out."
-    fi	
-	echo "[INFO] Shutdown [Zookeeper]"	
+    fi
+	echo "[INFO] Shutdown [Zookeeper]"
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
 	echo "[INFO] Shutdown [Kafka Connect]"
     sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
@@ -231,15 +231,15 @@ if [ -h ${DF_APP_DEP}/hadoop ]; then
 		sleep 3
 	else
 		echo "[WARN] Found Hadoop daemon running. Please [stop] or [restart] it."
-	fi	
+	fi
 else
 	echo "[WARN] Apache Hadoop Not Found"
 fi
 if [ -h ${DF_APP_DEP}/hive ]; then
 	hive --service metastore 1>> ${DF_APP_LOG}/metastore.log 2>> ${DF_APP_LOG}/metastore.log &
-	echo "[INFO] Started [Apache Hive Metastore]"	
+	echo "[INFO] Started [Apache Hive Metastore]"
 	hive --service hiveserver2 1>> ${DF_APP_LOG}/hiveserver2.log 2>> ${DF_APP_LOG}/hiveserver2.log &
-	echo "[INFO] Started [Apache Hive Server2]"	
+	echo "[INFO] Started [Apache Hive Server2]"
 	sleep 3
 else
 	echo "[WARN] Apache Hive Not Found"
@@ -261,11 +261,11 @@ echo "[INFO] Shutdown [Apache Hive Server2]"
 
 start_df() {
 sid=$(getSID ${DF_APP_NAME_PREFIX})
-if [ -z "${sid}" ]; then	
+if [ -z "${sid}" ]; then
 	while true; do
 		connectStatusCode=$(curl --noproxy '*' -s -o /dev/null -w "%{http_code}" $DF_KAFKA_CONNECT_URI 2> /dev/null)
 		if [ "$connectStatusCode" = "200" ]; then
-			if [[ "${mode}" =~ (^| )d($| ) ]]; then	
+			if [[ "${mode}" =~ (^| )d($| ) ]]; then
 				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
 				echo "[INFO] Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
 			else
@@ -274,12 +274,12 @@ if [ -z "${sid}" ]; then
 			fi
 			break
 		fi
-		echo "[INFO] Waiting for Kafka Connect Service ..."	
+		echo "[INFO] Waiting for Kafka Connect Service ..."
 		sleep 10
 	done
 else
 	echo "[WARN] Found DF daemon running. Please [stop] or [restart] it."
-fi		
+fi
 }
 
 stop_df() {
@@ -322,15 +322,15 @@ elif [ "${service}" = "max" ]; then
 	start_hadoop
 	start_flink
 	start_df
-elif [ "${service}" = "default" ]; then	
+elif [ "${service}" = "default" ]; then
 	start_confluent
 	start_flink
 	start_df
-elif [ "${service}" = "jar" ]; then	
-	start_df	
+elif [ "${service}" = "jar" ]; then
+	start_df
 else
 	echo "[ERROR] No service will start because of wrong command."
-fi	
+fi
 }
 
 stop_all_service () {
@@ -342,15 +342,15 @@ elif [ "${service}" = "max" ]; then
 	stop_confluent
 	stop_flink
 	stop_hadoop
-elif [ "${service}" = "default" ]; then	
+elif [ "${service}" = "default" ]; then
 	stop_df
 	stop_confluent
 	stop_flink
-elif [ "${service}" = "jar" ]; then	
+elif [ "${service}" = "jar" ]; then
 	stop_df
 else
 	echo "[ERROR] No service will stop because of wrong command."
-fi	
+fi
 }
 
 restart_all_service () {
@@ -360,7 +360,7 @@ start_all_service
 
 status_all () {
     status ${DF_APP_NAME_PREFIX} DataFibers
-    status ${ZOO_KEEPER_DAEMON_NAME} ZooKeeper    
+    status ${ZOO_KEEPER_DAEMON_NAME} ZooKeeper
     status ${KAFKA_DAEMON_NAME} Kafka
     status ${KAFKA_CONNECT_DAEMON_NAME} Kafka_Connect
     status ${SCHEMA_REGISTRY_DAEMON_NAME} Schema_Registry
@@ -374,8 +374,8 @@ status_all () {
 
 install_df () {
 echo "[INFO] Install DataFibers ..."
-cd ${DF_HOME}/bin
-./install_df.sh ${service}
+cd ${DF_HOME}
+./bin/install_df.sh ${service} ${DF_HOME}
 }
 
 update_df () {
@@ -445,7 +445,7 @@ soft_install () {
         fi
 		echo "[INFO] Installed ${file_name}"
     fi
-	
+
 	# Copy over conf files as well
 	if [ ! -z "$post_run_script" ]; then
 		echo "[INFO] Running post update script $post_run_script"
@@ -464,13 +464,13 @@ elif [ "${action}" = "restart" ]; then
 elif [ "${action}" = "status" ]; then
 	status_all
 elif [ "${action}" = "install" ]; then
-	install_df	
+	install_df
 elif [ "${action}" = "format" ]; then
-	format_all		
+	format_all
 elif [ "${action}" = "admin" ]; then
 	admin_df
 elif [ "${action}" = "help" ]; then
-	usage	
+	usage
 elif [ "${action}" = "update" ]; then
 	update_df
 else

@@ -6,6 +6,7 @@ if ! bc_loc="$(type -p "bc")" || [ -z "$bc_loc" ]; then
 fi
 
 branch=${1:-default}
+install_dir=${2}
 
 progress_bar()
 {
@@ -76,7 +77,12 @@ progress_bar()
   trap - SIGINT
 }
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ -z ${install_dir} ]; then
+    CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+else
+    CURRENT_DIR=${install_dir}
+fi
+
 DF_USER_HOME=/home/vagrant
 DF_CONFIG=conf
 DF_LIB=lib
@@ -87,7 +93,7 @@ DF_GIT_DF_DEMO=df_demo
 DF_GIT_DF_SERVICE=df_data_service
 DF_GIT_DF_CONNECT=df_certified_connects
 
-echo "[INFO] Start DataFibers installation at $CURRENT_DIR."
+echo "[INFO] Start DataFibers installation at $CURRENT_DIR"
 echo "[INFO] Step[1/5] - Creating Folders"
 
 if [ ! -d $DF_CONFIG ]; then
@@ -115,12 +121,12 @@ rm -rf $DF_GIT_DF_CONNECT
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_SERVICE.git &&
 git clone -q https://github.com/datafibers-community/$DF_GIT_DF_CONNECT.git) & progress_bar 20
 
-if [ "${branch}" != "default" ] ; then
+if [ "${branch}" == "default" ] ; then
     echo "[INFO] Step[3/5] - Installing Core Service"
     (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
 else
-    echo "[INFO] Step[3/5] - Installing Core Service From Branch ${branch}"
-    (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && git checkout ${branch} && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
+    echo "[INFO] Step[3/5] - Installing Core Service Branch ${branch}"
+    (cd $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE && git checkout -q ${branch} > /dev/null && mvn package -DskipTests > /dev/null 2>&1) & progress_bar 30
 fi
 
 echo "[INFO] Step[4/5] - Installing Certified Connectors"
@@ -137,7 +143,7 @@ rm -f /opt/flink/conf/flink-conf.yaml.bk
 cp /opt/flink/conf/flink-conf.yaml /opt/flink/conf/flink-conf.yaml.bk
 cp $CURRENT_DIR/$DF_CONFIG/flink/flink-conf.yaml /opt/flink/conf/
 
-cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/df* $CURRENT_DIR/$DF_BIN
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-app-init/*.sh $CURRENT_DIR/$DF_BIN
 chmod +x $CURRENT_DIR/$DF_BIN/*.sh
 dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/*
