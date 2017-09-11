@@ -442,7 +442,10 @@ soft_install () {
 
             ln -sfn /opt/$install_folder /opt/$install_soft_link
             cd /opt/$install_soft_link
-            mv */* . # mv all stuff from subfolder to upper folder
+            # Following 3 steps mv all stuff from subfolder to upper folder and delete it
+            mv * delete
+            mv */* .
+            rm -rf delete
 		else
 			echo "[INFO] Found $install_folder, ignore installation. "
         fi
