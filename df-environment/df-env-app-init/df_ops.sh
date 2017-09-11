@@ -439,7 +439,10 @@ soft_install () {
                 wget --progress=bar:force $dl_link --no-check-certificate
             fi
 			mkdir -p /opt/$install_folder && tar xf /tmp/vagrant-downloads/$file_name -C /opt/$install_folder
+
             ln -sfn /opt/$install_folder /opt/$install_soft_link
+            cd /opt/$install_soft_link
+            mv */* . # mv all stuff from subfolder to upper folder
 		else
 			echo "[INFO] Found $install_folder, ignore installation. "
         fi
