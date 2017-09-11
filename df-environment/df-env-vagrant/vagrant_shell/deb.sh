@@ -150,7 +150,7 @@ if [ "$JAVA_VER" != "8" ] && [ "$install_java" = "true" ]; then
 fi
 
 #Install Maven and Git
-sudo apt-get install -y maven git
+sudo apt-get install -y maven git vim
 sudo apt-get install dos2unix
 
 # Convert all files to Linux in case git setting wrong in Win
