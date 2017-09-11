@@ -149,8 +149,13 @@ dos2unix -q $CURRENT_DIR/$DF_BIN/**
 sudo chown -R vagrant:vagrant $CURRENT_DIR/*
 
 sed -i '/DF_HOME/d' $DF_USER_HOME/.profile
+sed -i '/alias df_ops/d' $DF_USER_HOME/.profile
+sed -i '/alias dfops/d' $DF_USER_HOME/.profile
+
 echo "export DF_HOME=\"$CURRENT_DIR\"" >> $DF_USER_HOME/.profile
 echo "PATH=\"\$DF_HOME/bin:\$PATH\"" >> $DF_USER_HOME/.profile
+echo "alias df_ops='df_ops.sh'" >> $DF_USER_HOME/.profile
+echo "alias dfops='df_ops.sh'" >> $DF_USER_HOME/.profile
 source $DF_USER_HOME/.profile
 
 echo "[INFO] Complete DataFibers Installation! :)" 
