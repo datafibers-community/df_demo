@@ -145,7 +145,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	sid=$(getSID ${SCHEMA_REGISTRY_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
 		schema-registry-start ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
-		sleep 3
+		sleep 5
 	else
 		echo "[WARN] Found Schema Registry daemon running. Please [stop] or [restart] it."
 	fi
@@ -265,6 +265,7 @@ if [ -z "${sid}" ]; then
 	while true; do
 		connectStatusCode=$(curl --noproxy '*' -s -o /dev/null -w "%{http_code}" $DF_KAFKA_CONNECT_URI 2> /dev/null)
 		if [ "$connectStatusCode" = "200" ]; then
+		    sleep 5
 			if [[ "${mode}" =~ (^| )d($| ) ]]; then
 				java -jar ${DF_HOME}/lib/${DF_APP_NAME_PREFIX}* -d 1> ${DF_APP_LOG}/df.log 2> ${DF_APP_LOG}/df.log &
 				echo "[INFO] Started [DF Data Service] in Debug Mode. To see log using tail -f ${DF_APP_LOG}/df.log"
@@ -275,7 +276,7 @@ if [ -z "${sid}" ]; then
 			break
 		fi
 		echo "[INFO] Waiting for Kafka Connect Service ..."
-		sleep 10
+		sleep 15
 	done
 else
 	echo "[WARN] Found DF daemon running. Please [stop] or [restart] it."
