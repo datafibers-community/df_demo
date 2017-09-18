@@ -308,9 +308,13 @@ echo $sid
 status () {
 local service_name=$1
 local service_name_show=$2
+local critical=$3
 sid=$(getSID $service_name)
 if [ ! -z "${sid}" ]; then
-	printf "%-6s %-20s %-50s\n" "[INFO]" "[$service_name_show]" "is running at [${sid}]"
+	printf "%-8s %-20s %-50s\n" "[INFO]"  "[$service_name_show]" "is running at [${sid}]"
+fi
+if [ -z "${sid}" ] && [ ! -z "${critical}" ]; then
+	printf "%-8s %-20s %-50s\n" "[ERROR]" "[$service_name_show]" "is missing and mandatory !"
 fi
 }
 
@@ -360,11 +364,11 @@ start_all_service
 }
 
 status_all () {
-    status ${DF_APP_NAME_PREFIX} DataFibers
-    status ${ZOO_KEEPER_DAEMON_NAME} ZooKeeper
-    status ${KAFKA_DAEMON_NAME} Kafka
-    status ${KAFKA_CONNECT_DAEMON_NAME} Kafka_Connect
-    status ${SCHEMA_REGISTRY_DAEMON_NAME} Schema_Registry
+    status ${DF_APP_NAME_PREFIX} DataFibers yes
+    status ${ZOO_KEEPER_DAEMON_NAME} ZooKeeper yes
+    status ${KAFKA_DAEMON_NAME} Kafka yes
+    status ${KAFKA_CONNECT_DAEMON_NAME} Kafka_Connect yes
+    status ${SCHEMA_REGISTRY_DAEMON_NAME} Schema_Registry yes
     status ${FLINK_JM_DAEMON_NAME} Flink_JobManager
     status ${FLINK_TM_DAEMON_NAME} Flink_TaskManager
     status ${HADOOP_NN_DAEMON_NAME} HadoopNN
