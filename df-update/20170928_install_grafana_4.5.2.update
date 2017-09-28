@@ -1,0 +1,5 @@
+update_desc="This update contains following changes\n1.Install Grafana Time Series Data Visualization Toll v4.5.2."
+install_soft_link=grafna
+install_folder=grafana-4.5.2
+dl_link=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.5.2.linux-x64.tar.gz
+post_run_script=20170928_update_post_script.sh
