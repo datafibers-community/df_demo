@@ -225,8 +225,8 @@ if [ -h ${DF_APP_DEP}/hadoop ]; then
 	sid=$(getSID ${HADOOP_NN_DAEMON_NAME})
 	sid2=$(getSID ${HADOOP_DN_DAEMON_NAME})
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
-		hadoop-daemon.sh start namenode  1 > /dev/null 2 > /dev/null
-		hadoop-daemon.sh start datanode  1 > /dev/null 2 > /dev/null
+		hadoop-daemon.sh start namenode
+		hadoop-daemon.sh start datanode
 		echo "[INFO] Started [Hadoop]"
 		sleep 3
 	else
