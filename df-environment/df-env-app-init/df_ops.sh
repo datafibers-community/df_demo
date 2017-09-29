@@ -323,8 +323,8 @@ if [ "${service}" = "min" ]; then
 	start_confluent
 	start_df
 elif [ "${service}" = "max" ]; then
-	start_confluent
 	start_hadoop
+	start_confluent
 	start_flink
 	start_df
 elif [ "${service}" = "default" ]; then
