@@ -17,7 +17,7 @@ usage () {
         printf "[service]\n"
         printf "%-25s: %-50s\n" "default" "Run kafka, flink, and df. This is the default option."
         printf "%-25s: %-50s\n" "min" "Run kafka and df"
-        printf "%-25s: %-50s\n" "max" "Run kafka, flink, hadoop, and df"
+        printf "%-25s: %-50s\n" "max" "Run kafka, flink, hadoop, hive, spark, livy, and df"
         printf "%-25s: %-50s\n" "jar" "Run df jar only"
     printf "\n"
         printf "[service option]\n"
