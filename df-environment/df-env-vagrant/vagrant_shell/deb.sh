@@ -11,7 +11,8 @@ install_flink=true
 install_mongo=true
 install_elastic=false
 install_zeppelin=false
-install_spark=false
+install_spark=true
+install_livy=true
 install_hbase=false
 install_oozie=false
 
@@ -19,17 +20,17 @@ install_oozie=false
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 release_confluent=-2.11
-#dl_link_confluent=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
-dl_link_confluent=http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
 release_flink=-bin-hadoop26-scala_2.11
 dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop26-scala_2.11.tgz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
 dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.2/zeppelin-0.7.2-bin-all.tgz
 dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
-dl_link_spark=https://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz
+dl_link_spark=https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.6.tgz
 release_hbase=-bin
 dl_link_hbase=https://archive.apache.org/dist/hbase/1.3.0/hbase-1.3.0-bin.tar.gz
 dl_link_oozie=https://archive.apache.org/dist/oozie/4.3.0/oozie-4.3.0.tar.gz
+dl_link_livy=https://github.com/datafibers-community/df_demo/releases/download/livy/livy-0.4.0-incubating-bin.tar.gz
 
 # sample call install_flag soft_install dl_link, such as
 # soft_install $install_hadoop hadoop $dl_link_hadoop
@@ -118,6 +119,9 @@ soft_install $install_hbase hbase $dl_link_hbase $release_hbase
 # Install Oozie
 soft_install $install_oozie oozie $dl_link_oozie
 
+# Install Livy
+soft_install $install_livy livy $dl_link_livy
+
 # Install Grafana
 if [ "$install_grafana" = true ]; then
     grafana_file_name=$(basename $dl_link_grafana)
@@ -181,6 +185,10 @@ cp /mnt/etc/flink/flink-conf.yaml /opt/flink/conf/
 # Enable mongodb access from out side of vm
 sudo mv /etc/mongod.conf /etc/mongod.conf.bk
 cp /mnt/etc/mongo/mongod.conf /etc/
+
+if [ "$install_spark" = true ]; then
+  cp /mnt/etc/hive/hive-site.xml /opt/spark/conf/
+fi
 
 # Install MySQL Metastore for Hive - do this after creating profiles in order to use hive schematool
 sudo apt-get -y update
