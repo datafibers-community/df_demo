@@ -103,6 +103,9 @@ ZOO_KEEPER_DAEMON_NAME=QuorumPeerMain
 SCHEMA_REGISTRY_DAEMON_NAME=schemaregistrymain
 FLINK_JM_DAEMON_NAME=JobManager
 FLINK_TM_DAEMON_NAME=TaskManager
+LIVY_JM_DAEMON_NAME=LivyServer
+SPARK_JM_DAEMON_NAME=Master
+SPARK_TM_DAEMON_NAME=Worker
 HADOOP_NN_DAEMON_NAME=NameNode
 HADOOP_DN_DAEMON_NAME=DataNode
 HIVE_SERVER_DAEMON_NAME=hiveserver2
@@ -220,6 +223,57 @@ else
 fi
 }
 
+start_spark () {
+if [ -h ${DF_APP_DEP}/spark ]; then
+	sid=$(getSID ${SPARK_JM_DAEMON_NAME})
+	sid2=$(getSID ${SPARK_TM_DAEMON_NAME})
+	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
+		start-all.sh 1 > /dev/null 2 > /dev/null
+		echo "[INFO] Started [Apache Spark]"
+		sleep 5
+	else
+		echo "[WARN] Found Spark daemon running. Please [stop] or [restart]."
+	fi
+else
+	echo "[WARN] Apache Spark Not Found"
+fi
+}
+
+stop_spark () {
+if [ -h ${DF_APP_DEP}/spark ]; then
+	stop-all.sh 1 > /dev/null 2 > /dev/null
+	echo "[INFO] Shutdown [Apache Spark]"
+	sleep 3
+else
+	echo "[WARN] Apache Spark Not Found"
+fi
+}
+
+start_livy () {
+if [ -h ${DF_APP_DEP}/livy ]; then
+	sid=$(getSID ${LIVY_JM_DAEMON_NAME})
+	if [ -z "${sid}" ]; then
+		${DF_APP_DEP}/livy/livy-server start
+		echo "[INFO] Started [Apache Livy]"
+		sleep 5
+	else
+		echo "[WARN] Found Livy daemon running. Please [stop] or [restart]."
+	fi
+else
+	echo "[WARN] Apache Livy Not Found"
+fi
+}
+
+stop_livy () {
+if [ -h ${DF_APP_DEP}/livy ]; then
+	${DF_APP_DEP}/livy/livy-server stop
+	echo "[INFO] Shutdown [Apache Livy]"
+	sleep 3
+else
+	echo "[WARN] Apache Livy Not Found"
+fi
+}
+
 start_hadoop () {
 if [ -h ${DF_APP_DEP}/hadoop ]; then
 	sid=$(getSID ${HADOOP_NN_DAEMON_NAME})
@@ -326,6 +380,8 @@ elif [ "${service}" = "max" ]; then
 	start_hadoop
 	start_confluent
 	start_flink
+	start_spark
+	start_livy
 	start_df
 elif [ "${service}" = "default" ]; then
 	start_confluent
@@ -345,6 +401,8 @@ if [ "${service}" = "min" ]; then
 elif [ "${service}" = "max" ]; then
 	stop_df
 	stop_confluent
+	stop_livy
+	stop_spark
 	stop_flink
 	stop_hadoop
 elif [ "${service}" = "default" ]; then
@@ -371,6 +429,9 @@ status_all () {
     status ${SCHEMA_REGISTRY_DAEMON_NAME} Schema_Registry yes
     status ${FLINK_JM_DAEMON_NAME} Flink_JobManager
     status ${FLINK_TM_DAEMON_NAME} Flink_TaskManager
+    status ${SPARK_JM_DAEMON_NAME} Spark_Master
+    status ${SPARK_TM_DAEMON_NAME} Spark_Worker
+    status ${LIVY_JM_DAEMON_NAME} Livy_Server
     status ${HADOOP_NN_DAEMON_NAME} HadoopNN
     status ${HADOOP_DN_DAEMON_NAME} HadoopDN
     status ${HIVE_SERVER_DAEMON_NAME} HiveServer2
