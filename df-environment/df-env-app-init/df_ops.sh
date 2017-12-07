@@ -22,6 +22,7 @@ usage () {
     printf "\n"
         printf "[service option]\n"
         printf "%-25s: %-50s\n" "debug" "Run in debug mode. This is a default option."
+        printf "%-25s: %-50s\n" "normal" "Run in normal mode."
     printf "\n"
     printf "[admin operation]\n"
         printf "%-25s: %-50s\n" "status" "Check status of data service and environment"
