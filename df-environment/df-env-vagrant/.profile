@@ -34,7 +34,6 @@ export FLINK_HOME="/opt/flink"
 export SPARK_HOME="/opt/spark"
 export LIVY_HOME="/opt/livy"
 
-PATH="$JAVA_HOME/bin:$PATH"
 PATH="$HADOOP_HOME/bin:$PATH"
 PATH="$HADOOP_HOME/sbin:$PATH"
 PATH="$HIVE_HOME/bin:$PATH"
@@ -43,6 +42,7 @@ PATH="$FLINK_HOME/bin:$PATH"
 PATH="$SPARK_HOME/bin:$PATH"
 PATH="$SPARK_HOME/sbin:$PATH"
 PATH="$LIVY_HOME/bin:$PATH"
+PATH="$JAVA_HOME/bin:$PATH"
 
 alias df_ops='df_ops.sh'
 alias dfops='df_ops.sh'
