@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -e #comment this since the curl returns none-zero when service is not avaliable
+#set -e #comment this since the curl returns none-zero when service is not available
 
 #######################################################################################################
 # Description : This script is used for df service operations, such as start, stop, and query status
@@ -480,7 +480,17 @@ for update_file in *.update; do
 		if [ "$q1" = "y" ]; then
 			# Apply the update
 			source $DF_REP/df_demo/df-update/$update_file
-			soft_install true $install_soft_link $install_folder $dl_link $post_run_script
+			cd ${DF_HOME}
+            ./bin/install_soft.sh true $DF_APP_DEP/$install_soft_link $DF_APP_DEP/$install_folder $dl_link
+
+			# Run post run scripts if available
+            if [ ! -z "$post_run_script" ]; then
+            	echo "[INFO] Running post update script $post_run_script"
+            	chmod +x $DF_REP/df_demo/df-update/$post_run_script
+            	cd $DF_HOME
+            	./repo/df_demo/df-update/$post_run_script
+            fi
+
 			#Log in to history
 			echo "[INFO] applied $update_file" >> $DF_APP_DEP/$DF_UPDATE_HIST_FILE_NAME
 		else
@@ -488,43 +498,6 @@ for update_file in *.update; do
 		fi
 	fi
 done
-}
-
-soft_install () {
-    install_flag=${1:-false}
-	install_soft_link=$2
-	install_folder=$3
-    dl_link=$4
-	release_version=$5
-
-	if [ "$install_flag" = true ]; then
-		file_name=`basename $dl_link`
-        if [ ! -e /opt/$install_folder ]; then
-            cd /tmp/vagrant-downloads
-            if [ ! -e $file_name ]; then
-                wget --progress=bar:force $dl_link --no-check-certificate
-            fi
-			mkdir -p /opt/$install_folder && tar xf /tmp/vagrant-downloads/$file_name -C /opt/$install_folder
-
-            ln -sfn /opt/$install_folder /opt/$install_soft_link
-            cd /opt/$install_soft_link
-            # Following 3 steps mv all stuff from subfolder to upper folder and delete it
-            mv * delete
-            mv */* .
-            rm -rf delete
-		else
-			echo "[INFO] Found $install_folder, ignore installation. "
-        fi
-		echo "[INFO] Installed ${file_name}"
-    fi
-
-	# Copy over conf files as well
-	if [ ! -z "$post_run_script" ]; then
-		echo "[INFO] Running post update script $post_run_script"
-		chmod +x $DF_REP/df_demo/df-update/$post_run_script
-		cd $DF_HOME
-		./repo/df_demo/df-update/$post_run_script
-	fi
 }
 
 if [ "${action}" = "start" ] ; then

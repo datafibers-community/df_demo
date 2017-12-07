@@ -9,10 +9,11 @@ install_hive=true
 install_confluent=true
 install_flink=true
 install_mongo=true
-install_elastic=false
-install_zeppelin=false
 install_spark=true
 install_livy=true
+
+install_elastic=false
+install_zeppelin=false
 install_hbase=false
 install_oozie=false
 
@@ -139,6 +140,9 @@ if [ "$install_mongo" = true ]; then
     echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
     sudo apt-get update
     sudo apt-get install -y mongodb-org
+
+    sudo systemctl enable mongod.service
+    sudo systemctl daemon-reload
 fi
 
 #Install Java 8
