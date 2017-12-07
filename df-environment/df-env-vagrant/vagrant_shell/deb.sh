@@ -11,6 +11,7 @@ install_flink=true
 install_mongo=true
 install_spark=true
 install_livy=true
+install_grafana=true
 
 install_elastic=false
 install_zeppelin=false
@@ -26,7 +27,7 @@ release_flink=-bin-hadoop26-scala_2.11
 dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop26-scala_2.11.tgz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
 dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.2/zeppelin-0.7.2-bin-all.tgz
-dl_link_grafana=https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.0-1468321182_amd64.deb
+dl_link_grafana=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.6.2.linux-x64.tar.gz
 dl_link_spark=https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.6.tgz
 release_hbase=-bin
 dl_link_hbase=https://archive.apache.org/dist/hbase/1.3.0/hbase-1.3.0-bin.tar.gz
@@ -124,14 +125,7 @@ soft_install $install_oozie oozie $dl_link_oozie
 soft_install $install_livy livy $dl_link_livy
 
 # Install Grafana
-if [ "$install_grafana" = true ]; then
-    grafana_file_name=$(basename $dl_link_grafana)
-    if [ ! -e $grafana_file_name ]; then
-        wget --progress=bar:force $dl_link_grafana
-    fi
-    sudo apt-get install -y adduser libfontconfig
-    sudo dpkg -i $grafana_file_name
-fi
+soft_install $install_grafana grafana $dl_link_grafana
 
 # Install MongoDB
 if [ "$install_mongo" = true ]; then
