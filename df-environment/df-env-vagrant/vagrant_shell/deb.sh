@@ -16,21 +16,36 @@ install_grafana=true
 install_elastic=false
 install_zeppelin=false
 install_hbase=false
-install_oozie=false
 
 #software repository links
+file_name_hadoop=hadoop-2.6.0.tar.gz
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+
+file_name_hive=hive-1.2.1.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
-dl_link_confluent="-O confluent-3.3.0.tar.gz http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz"
-release_flink=-bin-hadoop26-scala_2.11
+
+file_name_confluence=confluent-3.3.0.tar.gz
+dl_link_confluent=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
+
+file_name_flink=flink-1.3.2.tgz
 dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop26-scala_2.11.tgz
+
+file_name_elastic=elastic-2.3.4.tar.gz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
+
+file_name_zeppelin=zeppelin-0.7.2.tgz
 dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.2/zeppelin-0.7.2-bin-all.tgz
+
+file_name_grafana=grafana-4.6.2.tar.gz
 dl_link_grafana=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.6.2.linux-x64.tar.gz
+
+file_name_spark=spark-2.2.0.tgz
 dl_link_spark=https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.6.tgz
-release_hbase=-bin
+
+file_name_hbase=hbase-1.3.0.tar.gz
 dl_link_hbase=https://archive.apache.org/dist/hbase/1.3.0/hbase-1.3.0-bin.tar.gz
-dl_link_oozie=https://archive.apache.org/dist/oozie/4.3.0/oozie-4.3.0.tar.gz
+
+file_name_livy=livy-0.4.0.tar.gz
 dl_link_livy=https://github.com/datafibers-community/df_demo/releases/download/livy/livy-0.4.0-incubating-bin.tar.gz
 
 # sample call install_flag soft_install dl_link, such as
@@ -39,22 +54,18 @@ dl_link_livy=https://github.com/datafibers-community/df_demo/releases/download/l
 function soft_install
 {
     install_flag=${1:-false}
-	install_soft_link=/opt/$2
+    install_soft_link=/opt/$2
     dl_link=$3
-	release_version=$4
+    file_name=$4
 
 	if [ "$install_flag" = true ]; then
-		file_name=`basename $dl_link`
 
 		case $file_name in
 			(*.tar.gz) install_folder=/opt/`basename $file_name .tar.gz`;;
 			(*.tar) install_folder=/opt/`basename $file_name .tar`;;
 			(*.tgz) install_folder=/opt/`basename $file_name .tgz`;;
 		esac
-
-		#remove release number for confluent, which has release number in URL, but not in the unzip folder
-		install_folder=${install_folder//$release_version}
-
+		
 		echo "install_flag=$install_flag"
 		echo "dl_link=$dl_link"
 		echo "file_name=$file_name"
@@ -66,7 +77,7 @@ function soft_install
         if [ ! -e $install_folder ]; then
             pushd /tmp/vagrant-downloads
             if [ ! -e $file_name ]; then
-                wget --progress=bar:force $dl_link --no-check-certificate
+                wget --progress=bar:force -O $file_name $dl_link --no-check-certificate
             fi
             popd
             tar xzf /tmp/vagrant-downloads/$file_name
@@ -94,37 +105,34 @@ sudo apt-get -y update
 
 # Install and configure Apache Hadoop
 echo "install - hdp"
-soft_install $install_hadoop hadoop $dl_link_hadoop
+soft_install $install_hadoop hadoop $dl_link_hadoop $file_name_hadoop
 
 # Install and configure Hive
-soft_install $install_hive hive $dl_link_hive
+soft_install $install_hive hive $dl_link_hive $file_name_hive
 
 # Install CP
-soft_install $install_confluent confluent $dl_link_confluent
+soft_install $install_confluent confluent $dl_link_confluent $file_name_confluent
 
 # Install Elastic
-soft_install $install_elastic elastic $dl_link_elastic
+soft_install $install_elastic elastic $dl_link_elastic $file_name_elastic
 
 # Install Zeppelin
-soft_install $install_zeppelin zeppelin $dl_link_zeppelin
+soft_install $install_zeppelin zeppelin $dl_link_zeppelin $file_name_zeppelin
 
 # Install Flink
-soft_install $install_flink flink $dl_link_flink $release_flink
+soft_install $install_flink flink $dl_link_flink $file_name_flink
 
 # Install Spark
-soft_install $install_spark spark $dl_link_spark
+soft_install $install_spark spark $dl_link_spark $file_name_spark
 
 # Install HBase
-soft_install $install_hbase hbase $dl_link_hbase $release_hbase
-
-# Install Oozie
-soft_install $install_oozie oozie $dl_link_oozie
+soft_install $install_hbase hbase $dl_link_hbase $file_name_hbase
 
 # Install Livy
-soft_install $install_livy livy $dl_link_livy
+soft_install $install_livy livy $dl_link_livy $file_name_livy
 
 # Install Grafana
-soft_install $install_grafana grafana $dl_link_grafana
+soft_install $install_grafana grafana $dl_link_grafana $file_name_grafana
 
 # Install MongoDB
 if [ "$install_mongo" = true ]; then
