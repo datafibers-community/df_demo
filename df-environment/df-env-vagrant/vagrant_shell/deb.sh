@@ -24,7 +24,7 @@ dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop
 file_name_hive=hive-1.2.1.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 
-file_name_confluence=confluent-3.3.0.tar.gz
+file_name_confluent=confluent-3.3.0.tar.gz
 dl_link_confluent=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
 
 file_name_flink=flink-1.3.2.tgz
