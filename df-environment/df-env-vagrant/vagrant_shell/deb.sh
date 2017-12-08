@@ -21,8 +21,7 @@ install_oozie=false
 #software repository links
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
-release_confluent=-2.11
-dl_link_confluent=http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
+dl_link_confluent=-O confluent-3.3.0.tar.gz http://packages.confluent.io/archive/3.3/confluent-oss-3.3.0-2.11.tar.gz
 release_flink=-bin-hadoop26-scala_2.11
 dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop26-scala_2.11.tgz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
@@ -101,7 +100,7 @@ soft_install $install_hadoop hadoop $dl_link_hadoop
 soft_install $install_hive hive $dl_link_hive
 
 # Install CP
-soft_install $install_confluent confluent $dl_link_confluent $release_confluent
+soft_install $install_confluent confluent $dl_link_confluent
 
 # Install Elastic
 soft_install $install_elastic elastic $dl_link_elastic
