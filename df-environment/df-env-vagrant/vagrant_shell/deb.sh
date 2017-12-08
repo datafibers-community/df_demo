@@ -73,6 +73,10 @@ function soft_install
 		echo "install_soft_link=$install_soft_link"
 
         if [ ! -e $install_folder ]; then
+	    if [ ! -d /tmp/vagrant-downloads ]; then
+               mkdir -p /tmp/vagrant-downloads
+               sudo chmod a+rw /tmp/vagrant-downloads
+	    fi
             cd /tmp/vagrant-downloads
             if [ ! -e $file_name ]; then
                 wget --progress=bar:force -O $file_name $dl_link --no-check-certificate
