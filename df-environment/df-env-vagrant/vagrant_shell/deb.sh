@@ -21,7 +21,7 @@ install_hbase=false
 file_name_hadoop=hadoop-2.6.0.tar.gz
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 
-file_name_hive=hive-1.2.1.tar.gz
+file_name_hive=apache-hive-1.2.1-bin.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 
 file_name_confluence=confluent-3.3.0.tar.gz
