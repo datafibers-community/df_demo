@@ -72,19 +72,16 @@ function soft_install
 		echo "install_folder=$install_folder"
 		echo "install_soft_link=$install_soft_link"
 
-		pushd /opt/
-
         if [ ! -e $install_folder ]; then
-            pushd /tmp/vagrant-downloads
+            cd /tmp/vagrant-downloads
             if [ ! -e $file_name ]; then
                 wget --progress=bar:force -O $file_name $dl_link --no-check-certificate
             fi
-            popd
+            cd /opt/
             tar xzf /tmp/vagrant-downloads/$file_name
             ln -sfn $install_folder $install_soft_link
         fi
 		echo "completed installing ${2} with version ${file_name}"
-		popd
     fi
 }
 
