@@ -21,7 +21,7 @@ install_hbase=false
 file_name_hadoop=hadoop-2.6.0.tar.gz
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 
-file_name_hive=apache-hive-1.2.1-bin.tar.gz
+file_name_hive=hive-1.2.1.tar.gz
 dl_link_hive=https://archive.apache.org/dist/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz
 
 file_name_confluence=confluent-3.3.0.tar.gz
@@ -78,8 +78,13 @@ function soft_install
                 wget --progress=bar:force -O $file_name $dl_link --no-check-certificate
             fi
             cd /opt/
-            tar xzf /tmp/vagrant-downloads/$file_name
+            mkdir -p $install_folder && tar xf /tmp/vagrant-downloads/$file_name -C $install_folder
             ln -sfn $install_folder $install_soft_link
+	    cd /opt/$install_soft_link
+		# Following 3 steps mv all stuff from subfolder to upper folder and delete it
+		mv * delete
+		mv */* .
+		rm -rf delete
         fi
 		echo "completed installing ${2} with version ${file_name}"
     fi
