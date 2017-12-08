@@ -255,7 +255,7 @@ start_livy () {
 if [ -h ${DF_APP_DEP}/livy ]; then
 	sid=$(getSID ${LIVY_JM_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
-		${DF_APP_DEP}/livy/bin/livy-server start
+		${DF_APP_DEP}/livy/bin/livy-server start 1 > /dev/null 2 > /dev/null
 		echo "[INFO] Started [Apache Livy]"
 		sleep 5
 	else
