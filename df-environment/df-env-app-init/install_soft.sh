@@ -2,13 +2,9 @@
 set -e
 
 install_flag=${1:-false}
-install_soft_link_name=$2
-install_folder_name=$3
+install_soft_link=$2
+install_folder=$3
 dl_link=$4
-
-install_soft_base=/opt
-install_soft_link=$install_soft_base/$install_soft_link_name
-install_folder=$install_soft_base/$install_folder_name
 
 if [ "$install_flag" = true ]; then
 	file_name=`basename $dl_link`
