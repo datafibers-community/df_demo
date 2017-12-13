@@ -395,16 +395,22 @@ elif [ "${service:0:4}" = "mask" ]; then
 
 	if [ "${service:4:1}" == "1" ]; then
 	    start_hadoop
-	elif [ "${service:5:1}" == "1" ]; then
+	fi
+	if [ "${service:5:1}" == "1" ]; then
 	    start_confluent
-	elif [ "${service:6:1}" == "1" ]; then
+	fi
+	if [ "${service:6:1}" == "1" ]; then
 	    start_flink
-	elif [ "${service:7:1}" == "1" ]; then
+	fi
+	if [ "${service:7:1}" == "1" ]; then
 	    start_spark
 	    start_livy
-	elif [ "${service:8:1}" == "1" ]; then
+	fi
+	if [ "${service:8:1}" == "1" ]; then
 	    start_df
-	else
+	fi
+
+	if [ "${service}" = "mask" ]; then
 	    echo "[ERROR] No proper mask is specified."
 	    echo "[INFO] DataFibers start masking setting uses 1 to enable and 0 to disable the service to start"
 	    echo "[INFO] 5 bit masking represents service like hadoop (hive), kafka (schema registry), flink, spark (livy), datafibers"
