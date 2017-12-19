@@ -283,7 +283,7 @@ if [ -h ${DF_APP_DEP}/hadoop ]; then
 	if [ -z "${sid}" ] && [ -z "${sid2}" ]; then
 		hadoop-daemon.sh start namenode
 		hadoop-daemon.sh start datanode
-		echo "[INFO] Started [Hadoop]"
+		echo "[INFO] Started [Apache Hadoop]"
 		sleep 3
 	else
 		echo "[WARN] Found Hadoop daemon running. Please [stop] or [restart] it."
