@@ -136,7 +136,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	else
 		echo "[WARN] Found ZooKeeper daemon running. Please [stop] or [restart] it."
 	fi
-	echo "[INFO] Started [Zookeeper]"
+	echo "[INFO] Started [Apache Zookeeper]"
 
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
@@ -145,7 +145,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
 	else
 		echo "[WARN] Found Kafka daemon running. Please [stop] or [restart] it."
 	fi
-	echo "[INFO] Started [Kafka Server]"
+	echo "[INFO] Started [Apache Kafka Server]"
 
 	sid=$(getSID ${SCHEMA_REGISTRY_DAEMON_NAME})
 	if [ -z "${sid}" ]; then
@@ -179,7 +179,7 @@ stop_confluent () {
 if [ -h ${DF_APP_DEP}/confluent ]; then
 	echo "[INFO] Shutdown [Schema Registry]"
 	schema-registry-stop ${DF_APP_CONFIG}/schema-registry.properties 1> ${DF_APP_LOG}/schema-registry.log 2> ${DF_APP_LOG}/schema-registry.log &
-	echo "[INFO] Shutdown [Kafka Server]"
+	echo "[INFO] Shutdown [Apache Kafka Server]"
 	kafka-server-stop ${DF_APP_CONFIG}/server.properties 1> ${DF_APP_LOG}/kafka.log 2> ${DF_APP_LOG}/kafka.log &
 	sleep 15
 	sid=$(getSID ${KAFKA_DAEMON_NAME})
@@ -187,7 +187,7 @@ if [ -h ${DF_APP_DEP}/confluent ]; then
     	kill -9 ${sid}
 		echo "[WARN] Kafka PID is killed after 15 sec. time out."
     fi
-	echo "[INFO] Shutdown [Zookeeper]"
+	echo "[INFO] Shutdown [Apache Zookeeper]"
 	zookeeper-server-stop ${DF_APP_CONFIG}/zookeeper.properties 1> ${DF_APP_LOG}/zk.log 2> ${DF_APP_LOG}/zk.log &
 	echo "[INFO] Shutdown [Kafka Connect]"
     sid=$(getSID ${KAFKA_CONNECT_DAEMON_NAME})
@@ -303,7 +303,7 @@ fi
 }
 
 stop_hadoop () {
-echo "[INFO] Shutdown Hadoop"
+echo "[INFO] Shutdown [Apache Hadoop]"
 hadoop-daemon.sh stop datanode
 hadoop-daemon.sh stop namenode
 sid=$(getSID hivemetastore)
