@@ -20,8 +20,8 @@ if [ "$install_flag" = true ]; then
 		fi
 		mkdir -p $install_folder && tar xf /tmp/vagrant-downloads/$file_name -C $install_folder
 
-		ln -sfn $install_folder /opt/$install_soft_link
-		cd /opt/$install_soft_link
+		ln -sfn $install_folder $install_soft_link
+		cd $install_soft_link
 		# Following 3 steps mv all stuff from subfolder to upper folder and delete it
 		mv * delete
 		mv */* .

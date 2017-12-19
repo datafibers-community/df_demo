@@ -1,0 +1,5 @@
+update_desc="This update contains following changes\n1.Install Apache Spark v2.2.0."
+install_soft_link=spark
+install_folder=spark-2.2.0-bin-hadoop2.6
+dl_link=https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.6.tgz
+post_run_script=20171211_update_post_script.sh

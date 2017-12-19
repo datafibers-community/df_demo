@@ -199,6 +199,11 @@ cp /mnt/etc/mongo/mongod.conf /etc/
 
 if [ "$install_spark" = true ]; then
   cp /mnt/etc/hive/hive-site.xml /opt/spark/conf/
+  cp /mnt/etc/spark/* /opt/spark/conf/
+fi
+
+if [ "$install_livy" = true ]; then
+  cp /mnt/etc/livy/* /opt/livy/conf/
 fi
 
 # Install MySQL Metastore for Hive - do this after creating profiles in order to use hive schematool

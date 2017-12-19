@@ -1,0 +1,4 @@
+update_desc="This update contains following changes\n1.Install Apache Livy v0.4.0. - Rest API on Spark"
+install_soft_link=livy
+install_folder=livy-0.4.0-incubating-bin
+dl_link=https://github.com/datafibers-community/df_demo/releases/download/livy/livy-0.4.0-incubating-bin.tar.gz
