@@ -268,7 +268,7 @@ fi
 
 stop_livy () {
 if [ -h ${DF_APP_DEP}/livy ]; then
-	${DF_APP_DEP}/livy/bin/livy-server stop
+	${DF_APP_DEP}/livy/bin/livy-server stop 1 > /dev/null 2 > /dev/null
 	echo "[INFO] Shutdown [Apache Livy]"
 	sleep 3
 else
