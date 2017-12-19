@@ -159,5 +159,4 @@ echo "alias df_ops='df_ops.sh'" >> $DF_USER_HOME/.profile
 echo "alias dfops='df_ops.sh'" >> $DF_USER_HOME/.profile
 source $DF_USER_HOME/.profile
 
-echo "[INFO] Complete DataFibers Installation! :)" 
-
+echo "[INFO] Complete DataFibers Installation! :)"

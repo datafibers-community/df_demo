@@ -31,4 +31,3 @@ if [ "$install_flag" = true ]; then
 	fi
 	echo "[INFO] Installed ${file_name}"
 fi
-
