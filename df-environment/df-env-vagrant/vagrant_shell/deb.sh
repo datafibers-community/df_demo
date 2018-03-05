@@ -18,6 +18,8 @@ install_zeppelin=false
 install_hbase=false
 
 #software repository links
+dl_link_java=http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
+
 file_name_hadoop=hadoop-2.6.0.tar.gz
 dl_link_hadoop=https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 
@@ -33,14 +35,14 @@ dl_link_flink=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-ha
 file_name_elastic=elastic-2.3.4.tar.gz
 dl_link_elastic=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.3.4/elasticsearch-2.3.4.tar.gz
 
-file_name_zeppelin=zeppelin-0.7.2.tgz
-dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.2/zeppelin-0.7.2-bin-all.tgz
+file_name_zeppelin=zeppelin-0.7.3.tgz
+dl_link_zeppelin=https://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
 
 file_name_grafana=grafana-4.6.2.tar.gz
 dl_link_grafana=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.6.2.linux-x64.tar.gz
 
-file_name_spark=spark-2.2.0.tgz
-dl_link_spark=https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.6.tgz
+file_name_spark=spark-2.3.0.tgz
+dl_link_spark=https://archive.apache.org/dist/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.6.tgz
 
 file_name_hbase=hbase-1.3.0.tar.gz
 dl_link_hbase=https://archive.apache.org/dist/hbase/1.3.0/hbase-1.3.0-bin.tar.gz
@@ -157,7 +159,7 @@ JAVA_VER=$(java -version 2>&1 | grep -i version | sed 's/.*version ".*\.\(.*\)\.
 if [ "$JAVA_VER" != "8" ] && [ "$install_java" = "true" ]; then
     echo "installing java 8 ..."
     cd /opt/
-    wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz
+    wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" $dl_link_java
     tar -zxf jdk-8u141-linux-x64.tar.gz
     ln -sfn /opt/jdk1.8.0_141 /opt/jdk
     sudo update-alternatives --install /usr/bin/java java /opt/jdk/bin/java 8000
