@@ -135,7 +135,7 @@ echo "[INFO] Step[4/5] - Installing Certified Connectors"
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* $CURRENT_DIR/$DF_CONFIG
 cp -r $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_DEMO/df-environment/df-env-vagrant/etc/* /mnt/etc/
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/*/target/*dependencies.jar $CURRENT_DIR/$DF_LIB
-cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/resources/jdbc_driver/*dependencies.jar $CURRENT_DIR/$DF_LIB
+cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_CONNECT/resources/jdbc_driver/*.jar $CURRENT_DIR/$DF_LIB
 cp $CURRENT_DIR/$DF_GIT/$DF_GIT_DF_SERVICE/target/*fat.jar $CURRENT_DIR/$DF_LIB
 
 echo "[INFO] Step[5/5] - Applying Patches and Settings"
